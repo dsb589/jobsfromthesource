@@ -1,0 +1,1 @@
+POSTGRES_PW = "jobs_database"
