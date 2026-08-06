@@ -1,0 +1,33 @@
+use_default_settings:
+  engines:
+    keep_only:
+      - bing
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  default_lang: "en"
+  formats:
+    - html
+    - json
+
+server:
+  secret_key: "HZ85hnD2VOzTKsPrpHjr8xLYo3fX3oP"
+  bind_address: "127.0.0.1"
+  port: 8080
+
+engines:
+  - name: bing
+    engine: bing
+    shortcut: bi
+    disabled: false
+
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    disabled: false
+
+  - name: brave
+    engine: brave
+    shortcut: br
+    disabled: false
