@@ -1,1 +1,6 @@
-PROVIDER_PARAMS = {}
+PROVIDER_PARAMS = {
+    "Connecticut": {},
+    "Massachusetts": {},
+    "New York": {},
+    "Nonprofits": {}
+    }
