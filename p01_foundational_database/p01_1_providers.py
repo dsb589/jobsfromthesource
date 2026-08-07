@@ -35,6 +35,63 @@ def iter_connecticut_entities(provider_params):
     # select condition
     if provider_params.get("select_cond"):
         params["$select"] = provider_params["select_cond"]
+    
+    # With finalized params, make API calls in a loop
+    retries = 5
+    # run through 5 attempts
+    for attempt in range(retries):
+        # Use try/except logic for each request
+        try:
+            # Make the request
+            response = requests.get(
+                provider_params["endpoint_url"],
+                params=params,
+                timeout=30
+            )
+            # Get response
+            response.raise_for_status()
+            # Get records as json
+            records = response.json()
+            break
+        # Error handling if the try block doesn't work
+        except (
+            Timeout,
+            ConnectionError,
+            RequestException
+        ) as e:
+            print(
+                f"Request failed "
+                f"(attempt {attempt + 1}/{retries})"
+            )
+    
+            print(e)
+            # Stop the whole thing if we've exceeded our max retries
+            if attempt == retries - 1:
+                raise
+            # Otherwise, wait a few seconds and try again
+            sleep_time = 5 * (attempt + 1)
+            print(
+                f"Retrying in {sleep_time} seconds..."
+            )
+            time.sleep(
+                sleep_time
+            )
+        # At this stage, records should be returned.
+        # If they aren't, break the loop.
+        if not records:
+            break
+        # Generate each row of data through yield
+        for row in records:
+            yield {
+                "legal_name": row.get("legal_name"),
+                "source_id": row.get("source_id"),
+                "entity_status": row.get("entity_status"),
+                "source": provider_params["source"],
+                "state": provider_params["state"],
+                "date_registration": row.get("date_registration")
+            }
+        # increase the offset by the batch size; get next batch.
+        offset += provider_params["batch_size"]
 
 def iter_massachusetts_entities(provider_params):
     return
