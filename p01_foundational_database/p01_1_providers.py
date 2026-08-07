@@ -15,3 +15,15 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import re
 import string
+
+def iter_connecticut_entities():
+    return
+
+def iter_massachusetts_entities():
+    return
+
+def iter_new_york_entities():
+    return
+
+def iter_entities():
+    return
