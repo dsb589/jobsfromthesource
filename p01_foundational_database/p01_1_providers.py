@@ -107,6 +107,11 @@ def iter_massachusetts_entities(provider_params):
     return
 
 def iter_new_york_entities(provider_params):
+    """
+    Pull employers list from NY.gov.
+    Callable via iter_entities, then passed into a dataframe.
+    Results are yielded
+    """
     return
 
 def iter_entities():
