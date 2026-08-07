@@ -19,6 +19,14 @@ import string
 def iter_connecticut_entities(provider_params):
     # start an offset counter to help with batched requests
     offset = 0
+    # put offset & select provider_params into params dict that 
+    # gets passed into requests
+    params = {
+        "$offset": offset,
+        "$order": provider_params["id_col"],
+        "$limit": provider_params["batch_size"],    
+        
+    }
 
 def iter_massachusetts_entities(provider_params):
     return
