@@ -16,13 +16,13 @@ import time
 import re
 import string
 
-def iter_connecticut_entities():
+def iter_connecticut_entities(provider_params):
     return
 
-def iter_massachusetts_entities():
+def iter_massachusetts_entities(provider_params):
     return
 
-def iter_new_york_entities():
+def iter_new_york_entities(provider_params):
     return
 
 def iter_entities():
