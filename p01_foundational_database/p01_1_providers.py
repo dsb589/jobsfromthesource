@@ -110,10 +110,14 @@ def iter_massachusetts_entities(provider_params):
             html,
             "html.parser"
         )
+        # Find corporations search table 
         search_table = soup.find(
             "table",
             id="MainContent_SearchControl_grdSearchResultsEntity"
         )
+        # If we dont find the corporations table, return nothing
+        if not search_table:
+            return []
 
 
         return entities
