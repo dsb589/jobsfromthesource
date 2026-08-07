@@ -17,7 +17,8 @@ import re
 import string
 
 def iter_connecticut_entities(provider_params):
-    return
+    # start an offset counter to help with batched requests
+    offset = 0
 
 def iter_massachusetts_entities(provider_params):
     return
