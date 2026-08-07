@@ -105,7 +105,18 @@ def iter_massachusetts_entities(provider_params):
     Results are yielded
     """
     def parse_massachusetts_results(html):
-        return
+        # Initialize soup object
+        soup = BeautifulSoup(
+            html,
+            "html.parser"
+        )
+        search_table = soup.find(
+            "table",
+            id="MainContent_SearchControl_grdSearchResultsEntity"
+        )
+
+
+        return entities
     return
 
 def iter_new_york_entities(provider_params):
