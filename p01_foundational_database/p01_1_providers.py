@@ -25,8 +25,16 @@ def iter_connecticut_entities(provider_params):
         "$offset": offset,
         "$order": provider_params["id_col"],
         "$limit": provider_params["batch_size"],    
-        
     }
+    # The CT API includes inactive records; we can filter them
+    # out if we specify in our provider_params where condition
+    if provider_params.get("where_cond"):
+        params["$where"] = provider_params["where_cond"]
+    # The CT API returns more fields than it needs to; we can
+    # pull specific fields and rename them in our provider_params
+    # select condition
+    if provider_params.get("select_cond"):
+        params["$select"] = provider_params["select_cond"]
 
 def iter_massachusetts_entities(provider_params):
     return
