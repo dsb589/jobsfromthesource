@@ -105,6 +105,8 @@ def iter_massachusetts_entities(provider_params):
     Results are yielded
     """
     def parse_massachusetts_results(html):
+        # Initialize empty list of entities
+        entities = []
         # Initialize soup object
         soup = BeautifulSoup(
             html,
