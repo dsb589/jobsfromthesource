@@ -1066,6 +1066,55 @@ def iter_census_places(provider_params):
     Callable via iter_entities, then passed into a dataframe.
     Results are yielded
     """
+    # Initial variables - pulled from provider_params directly
+    endpoint_url = provider_params["endpoint_url"]
+    source = provider_params["source"]
+    states = provider_params["states"]
+    for state_abbr, state_fips in states.items():
+        # define params for pass through tigerweb api
+        params = {
+            "where": f"STATE='{state_fips}'",
+            "outFields": "GEOID,NAME,STATE",
+            "returnGeometry": "false",
+            "f": "json"
+        }
+        # attempt the API call
+        try:
+            response = requests.get(
+                endpoint_url,
+                params=params,
+                timeout=60
+            )
+            response.raise_for_status()
+        # Handle timeout and request exceptions
+        except Timeout as exc:
+            raise RuntimeError("Census TIGERweb places request timed out.") from exc
+        except RequestException as exc:
+            raise RuntimeError("Census TIGERweb places request failed.") from exc
+        # get data from json response and extract features (census places)
+        data = response.json()
+        # Error handling in json response
+        if "error" in data:
+            raise RuntimeError("Census TIGERweb places API error: {data['error']}")
+        features = data.get("features", [])
+        # loop through extracted features
+        for feature in features:
+            attributes = feature.get("attributes", {})
+            geoid = attributes.get("GEOID")
+            name = attributes.get("NAME")
+            # if no name found, stop
+            if not name:
+                continue
+            # yield normalized row
+            yield {
+                # Add text to town name to narrow down search for websites later
+                "name_to_search": name + " " + state_abbr + " government website",
+                "state": state_abbr,
+                "source_id": str(geoid),
+                "entity_status": "active",
+                "source": source
+            }
+
 
 def iter_entities():
     return
