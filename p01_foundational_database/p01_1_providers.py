@@ -163,7 +163,106 @@ def iter_massachusetts_entities(provider_params):
     options = Options()
     # Initialize driver object. Headless does not work for this site currently.
     driver = webdriver.Chrome(options=options)
-    
+    # Minimalist search terms to enter into the search box on the landing page
+    search_terms = string.ascii_uppercase + "0123456789"
+    # Loop through the search terms.
+    for search_term in search_terms:
+        # Access the driver
+        driver.get(
+            provider_params["endpoint_url"]
+        )
+        # Minimize driver window for ease of use
+        driver.minimize_window()
+        # Wait for search page to load before proceeding
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located(
+                (By.ID, "MainContent_txtEntityName")
+            )
+        )
+        # There are different search types on the MA site; select the 
+        # "Begins with" search.
+        search_type = Select(
+            driver.find_element(
+                By.ID, "MainContent_ddBeginsWithEntityName"
+            )
+        )
+        # Enter the search term, e.g. A B C
+        search_type.select_by_value(search_term)
+        # Look for the dropdown on the page to enter count per page
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located(
+                (By.ID, "MainContent_txtEntityName")
+            )
+        )
+        # Select dropdown object
+        records_dropdown = Select(
+            driver.find_element(
+                By.ID, "MainContent_ddRecordsPerPage"
+            )
+        )
+        # Set dropdown to 100 per page
+        records_dropdown.select_by_value("100")
+        # Return to search screen if needed
+        if "CorpSearchResults" in driver.current_url:
+            driver.find_element(
+                By.ID, "MainContent_btnNewSearch"
+            ).click()
+            # Wait for objects to appear
+            WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located(
+                    (By.ID, "MainContent_txtEntityName")
+                )
+            )
+            # Wait for search box
+            search_box = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located(
+                    (By.ID, "MainContent_txtEntityName")
+                )
+            )
+            # Empty search box
+            search_box.clear()
+            # Place search term in search box
+            search_box.send_keys(search_term)
+            # Press the search button
+            driver.find_element(
+                By.ID, "MainContent_btnSearch"
+            ).click()
+            # Wait for results to appear
+            WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located(
+                    (By.ID, "MainContent_SearchControl_grdSearchResultsEntity")
+                )
+            )
+            # Once search loads, determine # of pages
+            html = driver.page_source
+            total_pages = get_total_pages(html)
+            # Loop through every page 
+            for page in range(1, total_pages + 1):
+                # parse each entity
+                for entity in parse_massachusetts_results(html):
+                    yield entity
+                # continue as long as we're not on last page
+                if page < total_pages:
+                    # Execute search results
+                    driver.execute_script(
+                        """
+                        __doPostBack(
+                            'ctl00$MainContent$SearchControl$grdSearchResultsEntity',
+                            arguments[0]
+                        )
+                        """,
+                        f"Page${page+1}"
+                    )
+                    # SLeep for a second (safety measure)
+                    time.sleep(1)
+                    # Wait for the next page to load
+                    WebDriverWait(driver, 30).until(
+                        EC.presence_of_element_located(
+                            (By.ID, "MainContent_SearchControl_grdSearchResultsEntity")
+                        )
+                    )
+                    # Re-access html after load
+                    html = driver.page_source
     return
 
 def iter_new_york_entities(provider_params):
