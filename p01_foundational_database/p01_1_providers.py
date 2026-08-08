@@ -1,4 +1,5 @@
-import sys
+import pandas as pd 
+import os
 from definables import provider_params as pp
 from definables import constants as dfn
 from definables import credentials as cred
@@ -1156,3 +1157,23 @@ def iter_entities(entity):
         raise ValueError(
             f"Unknown provider: {entity}"
         )
+        
+def main():
+    # Place each of the individual employer sources into dataframes
+    ct_df = pd.DataFrame(iter_entities(entity="Connecticut"))
+    ma_df = pd.DataFrame(iter_entities(entity="Massachusetts"))
+    ny_df = pd.DataFrame(iter_entities(entity="New York"))
+    nonprofits_df = pd.DataFrame(iter_entities(entity="Nonprofits"))
+    medical_df = pd.DataFrame(iter_entities(entity="Medical"))
+    universities_df = pd.DataFrame(iter_entities(entity="Universities"))
+    census_towns_df = pd.DataFrame(iter_entities(entity="Census_Towns"))
+    census_places_df = pd.DataFrame(iter_entities(entity="Census_Places"))
+    # export them into parquet files
+    ct_df.to_parquet(os.path.join("p01_1_providers_output", "ct_df.parquet"))
+    ma_df.to_parquet(os.path.join("p01_1_providers_output", "ma_df.parquet"))
+    ny_df.to_parquet(os.path.join("p01_1_providers_output", "ny_df.parquet"))
+    nonprofits_df.to_parquet(os.path.join("p01_1_providers_output", "nonprofits_df.parquet"))
+    medical_df.to_parquet(os.path.join("p01_1_providers_output", "medical_df.parquet"))
+    universities_df.to_parquet(os.path.join("p01_1_providers_output", "universities_df.parquet"))
+    census_towns_df.to_parquet(os.path.join("p01_1_providers_output", "census_towns_df.parquet"))
+    census_places_df.to_parquet(os.path.join("p01_1_providers_output", "census_places_df.parquet"))
