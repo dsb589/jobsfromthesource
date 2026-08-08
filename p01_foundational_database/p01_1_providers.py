@@ -386,6 +386,33 @@ def iter_propublica_nonprofits(provider_params):
                 time.sleep(sleep_time)
         return
     def get_partition_results(base_params):
+        """
+        Get all available results for a single partition
+        """
+        # Initialize first page as 0
+        page = 0
+        # Use a copy of parameters & add a "page" parameter to the copy
+        params = base_params.copy()
+        params["page"] = page
+        # Use the make_request function to make a partitioned request
+        data = make_request(
+            params
+        )
+        # If no data is available for the partition, skip it.
+        if data is None:
+            print("Skipping unavailable partition:")
+            print(base_params)
+            break
+        # Store # of total results for a partition
+        total_results = data.get("total_results", 0)
+        # Store # of pages for a partition
+        num_pages = data.get("num_pages", 0)
+        # Get number of organizations in partition
+        organizations = data.get("organizations", [])
+        # Prints to help with debugging
+        print("Partition:", base_params, "|", "Page:", page, "|", "Total:", 
+              total_results, "|", "Pages:",num_pages)
+
         return
     return
 
