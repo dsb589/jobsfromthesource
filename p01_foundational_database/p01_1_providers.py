@@ -914,7 +914,8 @@ def iter_medical_organizations(provider_params):
             # call zip partition function
             yield from get_zip_partition(state, zip_prefix)
             
-
+def iter_universities(provider_params):
+    return
 
 def iter_entities():
     return
