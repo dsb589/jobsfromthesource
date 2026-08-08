@@ -1,5 +1,6 @@
 import sys
 from definables import provider_params as pp
+from definables import constants as dfn
 import requests
 from bs4 import BeautifulSoup
 from requests.exceptions import (
