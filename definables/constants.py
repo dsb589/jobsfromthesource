@@ -27,3 +27,20 @@ ZIP_PREFIXES = {
     "MA": [f"{n:03d}" for n in range(10, 28)],
     "NY":[f"{n:03d}" for n in range(100, 150)]
 }
+
+# Filtering Lists
+NON_EMPLOYER_TERMS = [
+    "foundation",
+    "church",
+    "temple",
+    "lodge",
+    "society",
+    "club",
+    "condominium",
+    "trust",
+    "realty",
+    "properties",
+    "holdings",
+    "capital",
+    "investments"
+]

@@ -1,5 +1,5 @@
 import pandas as pd 
-
+from definables import constants as dfn
 
 def clean_employer_dataframe(df, apply_filters=True):
     """
@@ -7,7 +7,24 @@ def clean_employer_dataframe(df, apply_filters=True):
     employers.
     returns df
     """
-    
+    # start by making a copy of input df
+    employer_df = df.copy()
+    # Check for name_to_search col; stop if not found.
+    if "name_to_search" not in employer_df.columns:
+        raise ValueError("DataFrame must contain 'name_to_search'.")
+    # only apply filters if argument is True
+    if apply_filters:
+        # Get rid of rows with no name.
+        employer_df = employer_df[employer_df["name_to_search"].notna()]
+        employer_df = employer_df[employer_df["name_to_search"].str.strip() != ""]
+        # get series of org names
+        name = employer_df["name_to_search"].str.lower()
+        # look for non-employer indicators
+        bad_pattern = "|".join(dfn.NON_EMPLOYER_TERMS)
+        # filter out orgs with non-employer indicators
+        employer_df = employer_df[~name.str.contains(bad_pattern, na=False)]
+    return employer_df
+        
 def remove_financial_entities(df, apply_filters=True):
     """
     Function to remove financial entities from df that are unlikely to be true
