@@ -90,7 +90,7 @@ def iter_connecticut_entities(provider_params) -> None:
         for row in records:
             yield {
                 "legal_name": row.get("legal_name"),
-                "source_id": row.get("source_id"),
+                "source_id": str(row.get("source_id")),
                 "entity_status": row.get("entity_status"),
                 "source": provider_params["source"],
                 "state": provider_params["state"],
@@ -137,7 +137,7 @@ def iter_massachusetts_entities(provider_params):
             entities.append(
                 {
                     "legal_name": name_link.get_text(" ", strip=True).strip("; "),
-                    "source_id": cells[0].get_text(strip=True),
+                    "source_id": str(cells[0].get_text(strip=True)),
                     "entity_status": "Active",
                     "source": provider_params["source"],
                     "state": provider_params["state"]
