@@ -11,3 +11,6 @@ SUPABASE_API_KEY = ""
 
 # Gemini Details
 GEMINI_API_KEY = ""
+
+# College Scorecard Details
+COLLEGE_SCORECARD_API_KEY = ""
