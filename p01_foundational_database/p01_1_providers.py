@@ -1121,4 +1121,38 @@ def iter_entities(entity):
     This is a routing function, designed to call different functions in this script
     depending on which provider entity we want to look up.
     """
-    return
+    if entity == "Connecticut":
+        params=pp.PROVIDER_PARAMS["Connecticut"]
+        yield from iter_connecticut_entities(params)
+
+    elif entity == "Massachusetts":
+        params=pp.PROVIDER_PARAMS["Massachusetts"]
+        yield from iter_massachusetts_entities(params)
+
+    elif entity == "New York":
+        params=pp.PROVIDER_PARAMS["New York"]
+        yield from iter_new_york_entities(params)
+
+    elif entity == "Nonprofits":
+        params = pp.PROVIDER_PARAMS["Nonprofits"]
+        yield from iter_propublica_nonprofits(params)
+        
+    elif entity == "Medical":
+        params = pp.PROVIDER_PARAMS["Medical"]
+        yield from iter_medical_organizations(params)
+        
+    elif entity == "Universities":
+        params = pp.PROVIDER_PARAMS["Universities"]
+        yield from iter_universities(params)
+        
+    elif entity == "Census_Towns":
+        params = pp.PROVIDER_PARAMS["Census_Towns"]
+        yield from iter_census_towns(params)
+        
+    elif entity == "Census_Places":
+        params = pp.PROVIDER_PARAMS["Census_Places"]
+        yield from iter_census_places(params)
+    else:
+        raise ValueError(
+            f"Unknown provider: {entity}"
+        )
