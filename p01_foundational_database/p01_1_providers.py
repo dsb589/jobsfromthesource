@@ -337,6 +337,10 @@ def iter_propublica_nonprofits(provider_params):
     Callable via iter_entities, then passed into a dataframe.
     Results are yielded
     """
+    def make_request(params):
+        return
+    def get_partition_results(base_params):
+        return
     return
 
 def iter_entities():
