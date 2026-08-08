@@ -1033,7 +1033,12 @@ def iter_census_towns(provider_params):
                 timeout=60
             )
             response.raise_for_status()
-            
+        # Handle timeout and request exceptions
+        except Timeout as exc:
+            raise RuntimeError("Census TIGERweb request timed out.") from exc
+        except RequestException as exc:
+            raise RuntimeError("Census TIGERweb request failed.") from exc
+
 def iter_census_places(provider_params):
     """
     Pull US Census places list from tigerweb API.
