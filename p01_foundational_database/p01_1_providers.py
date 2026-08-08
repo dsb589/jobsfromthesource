@@ -1116,5 +1116,9 @@ def iter_census_places(provider_params):
             }
 
 
-def iter_entities():
+def iter_entities(entity):
+    """
+    This is a routing function, designed to call different functions in this script
+    depending on which provider entity we want to look up.
+    """
     return
