@@ -526,6 +526,8 @@ def iter_propublica_nonprofits(provider_params):
                 yield from get_partition_results(sub_partition)
                 continue
                 
+def iter_medical_organizations(provider_params):
+    return
 
 def iter_entities():
     return
