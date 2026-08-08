@@ -47,6 +47,20 @@ def apply_employer_filters(df, apply_filters=True):
     employers.
     returns df
     """
+    # start by making a copy of input df
+    employer_df = df.copy()
+    # only apply filters if argument is True
+    if apply_filters:
+        # get proportion of entity name that's numeric. If high, filter.
+        numeric_ratio = employer_df["name_to_search"].str.count(r"\d") / employer_df["name_to_search"].str.len()
+        # filter out entities with a high % of numeric characters in the name
+        employer_df = employer_df[numeric_ratio < 0.3]
+        # get name series from df
+        name = employer_df["name_to_search"].str.lower()
+        # Apply additional filtering of passive terms.
+        passive_pattern = "|".join(dfn.PASSIVE_TERMS)
+        employer_df = employer_df[~name.str.contains(passive_pattern, na=False)]
+    return employer_df
 
 def employer_priority_score(df):
     """

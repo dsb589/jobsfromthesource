@@ -55,3 +55,13 @@ FINANCIAL_TERMS = [
     "partners lp",
     "real estate investment"
 ]
+
+PASSIVE_TERMS = [
+    "nominee",
+    "nominees",
+    "trustee",
+    "portfolio",
+    "asset",
+    "venture",
+    "ventures"
+]
