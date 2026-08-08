@@ -823,11 +823,85 @@ def iter_medical_organizations(provider_params):
             # Move to next batch.
             skip += base_params["batch_size"]
 
-    def get_zip_partition(state, zip_prefix):
+    def get_zip_partition(state, zip_prefix, base_params):
         """
         3-digit zip code partition
         """
-        return
+        # logging
+        print("NPI partition: {state} / ZIP {zip_prefix}")
+        partition = {"postal_code": zip_prefix}
+        # design first dict for API request
+        first_params = partition.copy()
+        first_params["state"] = state
+        first_params["enumeration_type"] = "NPI-2"
+        first_params["limit"] = base_params["batch_size"]
+        first_params["skip"] = 0
+        # Pass parameters into API call
+        data = make_request(first_params)
+        # handle error in API call
+        if "__npi_error__" in data:
+            print("NPI ZIP partition returned an API error:")
+            print(data["__npi_error__"])
+            return
+        # get organizations on the page
+        organizations = data.get("results", [])
+        # logging
+        print(f"NPI: {state} | ZIP {zip_prefix} | skip 0 | {len(organizations)} organizations")
+        # if no organisations, stop
+        if not organizations:
+            return
+        # convert organisations to normalized objects for table
+        for row in organizations:
+            yield convert_organization(row)
+        # if we have fewer organisations than the batch size, stop
+        if len(organizations) < base_params["batch_size"]:
+            return
+        # Otherwise, move to the next page
+        skip = base_params["batch_size"]
+        # Loop through pages
+        while True:
+            # Error handling for if we exceed API search limit - go to fallbacks
+            if skip > dfn.NPI_API_LIMIT:
+                print("WARNING: NPI partition reached the API skip limit.")
+                print(f"State: {state}")
+                print(f"Partition: ZIP {zip_prefix}")
+                print(f"WARNING: {state} / ZIP {zip_prefix} reached the API skip limit.")
+                print("Splitting into exact ZIP codes.")
+                # Split 3-digit ZIP into 100 possible exact ZIPs.
+                prefix = zip_prefix[:3]
+                for suffix in range(100):
+                    # generate exact zip
+                    exact_zip = f"{prefix}{suffix:02d}"
+                    # fallback on exact zip results function
+                    yield from get_exact_zip_results(state, exact_zip)
+                return
+            # Set up page parameters for next page
+            page_params = partition.copy()
+            page_params["state"] = state
+            page_params["enumeration_type"] = "NPI-2"
+            # use batch size defined in provider_params
+            page_params["limit"] = base_params["batch_size"]
+            page_params["skip"] = skip
+            # pass params to API for this page
+            page_data = make_request(page_params)
+            # error handling for API requests
+            if "__npi_error__" in page_data:
+                # logging
+                print("NPI ZIP partition returned an API error:")
+                print(page_data["__npi_error__"])
+                return
+            # get organisations on the page
+            page_organizations = page_data.get("results", [])
+            # logging
+            print(f"NPI: {state} | ZIP {zip_prefix} | skip {skip} | {len(page_organizations)} organizations")
+            # loop through organisations on the page
+            for row in page_organizations:
+                # put organisation into normalised row
+                yield convert_organization(row)
+            if (len(page_organizations) < base_params["batch_size"]):
+                return
+            # Move to next batch.
+            skip += base_params["batch_size"]
     
     return
 
