@@ -332,6 +332,11 @@ def iter_new_york_entities(provider_params):
         offset += provider_params["batch_size"]
 
 def iter_propublica_nonprofits(provider_params):
+    """
+    Pull employers list from Propublica nonprofits API.
+    Callable via iter_entities, then passed into a dataframe.
+    Results are yielded
+    """
     return
 
 def iter_entities():
