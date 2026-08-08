@@ -422,7 +422,20 @@ def iter_propublica_nonprofits(provider_params):
                 "state": row.get("state"),
                 "date_registration": None
             }
-
+        # if no organizations found, stop.
+        if not organizations:
+            break
+        # Limitation: if there are more than 10,000 results in a given
+        # partition, this will break. #TODO would be good to add a workaround.
+        # For now, simply continue as if 10,000 is the true number of 
+        # organisations in the partition, when this occurs.
+        if page >= num_pages - 1:
+            if total_results >= 10000:
+                print("Reached ProPublica's " "10,000-record limit for partition:")
+                print(base_params)
+            break
+        # Go to the next page.
+        page += 1
         return
     return
 
