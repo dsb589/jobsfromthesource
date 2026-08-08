@@ -287,8 +287,12 @@ def iter_new_york_entities(provider_params):
     """
     # initialize offset to determine starting point for API call
     offset = 0
-    
-    
+    # set parameters as constants from provider_params + currnet offset
+    params = {
+        "$limit": provider_params["batch_size"],
+        "$offset": offset,
+        "$order": provider_params["id_col"]
+    }
     return
 
 def iter_entities():
