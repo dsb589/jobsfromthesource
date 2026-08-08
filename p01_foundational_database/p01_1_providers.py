@@ -1007,9 +1007,7 @@ def iter_universities(provider_params):
         # increase page by 1
         page += 1
         # Let API rest briefly
-        time.sleep(
-            0.1
-        )
+        time.sleep(0.1)
 
 
 def iter_entities():
