@@ -208,3 +208,18 @@ def run_first_cleaning_pass(df, apply_filters=True):
     """
     Master function that runs through all other functions in file
     """
+    print("Starting with raw DF from source.")
+    clean_employer_df = clean_employer_dataframe(df, apply_filters=apply_filters)
+    print("SHAPE AFTER clean_employer_dataframe().", clean_employer_df.shape)
+    remove_financial_entities_df = remove_financial_entities(clean_employer_df, apply_filters=apply_filters)
+    print("SHAPE AFTER remove_financial_entities().", remove_financial_entities_df.shape)
+    employer_filters_df = apply_employer_filters(remove_financial_entities_df, apply_filters=apply_filters)
+    print("SHAPE AFTER apply_employer_filters().", employer_filters_df.shape)
+    employer_priority_df = employer_priority_score(employer_filters_df)
+    print("SHAPE AFTER employer_priority_score().", employer_priority_df.shape)
+    website_queue = create_website_queue(employer_priority_df, apply_filters=apply_filters)
+    print("SHAPE AFTER create_website_queue().", website_queue.shape)
+    analyze_website_queue(website_queue)
+    deduplicated_df = deduplicate_employers(website_queue, apply_filters=apply_filters)
+    print("SHAPE AFTER deduplicate_employers().", deduplicated_df.shape)
+    return deduplicated_df
