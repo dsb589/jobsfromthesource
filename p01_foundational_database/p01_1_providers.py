@@ -1038,6 +1038,27 @@ def iter_census_towns(provider_params):
             raise RuntimeError("Census TIGERweb request timed out.") from exc
         except RequestException as exc:
             raise RuntimeError("Census TIGERweb request failed.") from exc
+        # get data from json response and extract features (towns)
+        data = response.json()
+        features = data.get("features", [])
+        # loop through extracted features
+        for feature in features:
+            # get data for normalized row
+            attributes = feature.get("attributes", {})
+            geoid = attributes.get("GEOID")
+            name = attributes.get("NAME")
+            # if no name found, stop
+            if not name:
+                continue
+            # Yield an normalized row
+            yield {
+                # Add text to town name to narrow down search for websites later
+                "name_to_search": name + " " + state_abbr + " government website",
+                "state": state_abbr,
+                "source_id": str(geoid),
+                "entity_status": "active",
+                "source": source
+            }
 
 def iter_census_places(provider_params):
     """
