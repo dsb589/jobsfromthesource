@@ -662,7 +662,7 @@ def iter_medical_organizations(provider_params):
             # offset skip by the batch size.
             skip += params["batch_size"]
 
-    def get_taxonomy_partitions(state, zip_code, base_params):
+    def get_taxonomy_partitions(state, zip_code):
         """
         Partition by medical org taxonomies
          The NPI API accepts taxonomy_description
@@ -680,7 +680,7 @@ def iter_medical_organizations(provider_params):
             first_params = partition.copy()
             first_params["state"] = state
             first_params["enumeration_type"] = "NPI-2"
-            first_params["limit"] = base_params["batch_size"]
+            first_params["limit"] = provider_params["batch_size"]
             first_params["skip"] = 0
             # Pass first params into API request and get data
             data = make_request(first_params)
@@ -703,10 +703,10 @@ def iter_medical_organizations(provider_params):
             for row in organizations:
                 yield convert_organization(row)
             # Stop the partition if we have less records than the batch size
-            if len(organizations) < base_params["batch_size"]:
+            if len(organizations) < provider_params["batch_size"]:
                 continue
             # If more pages exist, go on to the next page.
-            skip = base_params["batch_size"]
+            skip = provider_params["batch_size"]
             # Look for cases where we are continuing to exceed the skip limit
             while True:
                 if skip > dfn.NPI_API_LIMIT:
@@ -721,7 +721,7 @@ def iter_medical_organizations(provider_params):
                 page_params = partition.copy()
                 page_params["state"] = state
                 page_params["enumeration_type"] = "NPI-2"
-                page_params["limit"] = base_params["batch_size"]
+                page_params["limit"] = provider_params["batch_size"]
                 page_params["skip"] = skip
                 # Pass page params to API
                 page_data = make_request(page_params)
@@ -743,12 +743,12 @@ def iter_medical_organizations(provider_params):
                     # convert each organization into normalized row
                     yield convert_organization(row)
                 # Stop when there are fewer orgs on the page than the batch size
-                if (len(page_organizations) < base_params["batch_size"]):
+                if (len(page_organizations) < provider_params["batch_size"]):
                     break
                 # Move to next batch
-                skip += base_params["batch_size"]
+                skip += provider_params["batch_size"]
         
-    def get_exact_zip_results(state, zip_code, base_params):
+    def get_exact_zip_results(state, zip_code):
         """
         Precise zip code partition
         """
@@ -761,7 +761,7 @@ def iter_medical_organizations(provider_params):
         first_params["state"] = state
         first_params["enumeration_type"] = "NPI-2"
         # batch size should come from standard parameters dictionary
-        first_params["limit"] = base_params["batch_size"]
+        first_params["limit"] = provider_params["batch_size"]
         first_params["skip"] = 0
         # make API call with first params dictionary
         data = make_request(first_params)
@@ -782,10 +782,10 @@ def iter_medical_organizations(provider_params):
         for row in organizations:
             yield convert_organization(row)
         # check if there are fewer orgs than the batch size; if there are, stop.
-        if len(organizations) < base_params["batch_size"]:
+        if len(organizations) < provider_params["batch_size"]:
             return
         # Go to next page.
-        skip = base_params["batch_size"]
+        skip = provider_params["batch_size"]
         # Continue looping through pages.
         while True:
             # Check if we're exceeding the API limit
@@ -800,7 +800,7 @@ def iter_medical_organizations(provider_params):
             page_params["state"] = state
             page_params["enumeration_type"] = "NPI-2"
             # Use batch size from the parameters defined in provider_params
-            page_params["limit"] = base_params["batch_size"]
+            page_params["limit"] = provider_params["batch_size"]
             page_params["skip"] = skip
             page_data = make_request(page_params)
             # Check for API error
@@ -818,12 +818,12 @@ def iter_medical_organizations(provider_params):
             for row in page_organizations:
                 yield convert_organization(row)
             # stop if we have more orgs on the page than our batch size can handle
-            if (len(page_organizations) < base_params["batch_size"]):
+            if (len(page_organizations) < provider_params["batch_size"]):
                 return
             # Move to next batch.
-            skip += base_params["batch_size"]
+            skip += provider_params["batch_size"]
 
-    def get_zip_partition(state, zip_prefix, base_params):
+    def get_zip_partition(state, zip_prefix):
         """
         3-digit zip code partition
         """
@@ -834,7 +834,7 @@ def iter_medical_organizations(provider_params):
         first_params = partition.copy()
         first_params["state"] = state
         first_params["enumeration_type"] = "NPI-2"
-        first_params["limit"] = base_params["batch_size"]
+        first_params["limit"] = provider_params["batch_size"]
         first_params["skip"] = 0
         # Pass parameters into API call
         data = make_request(first_params)
@@ -854,10 +854,10 @@ def iter_medical_organizations(provider_params):
         for row in organizations:
             yield convert_organization(row)
         # if we have fewer organisations than the batch size, stop
-        if len(organizations) < base_params["batch_size"]:
+        if len(organizations) < provider_params["batch_size"]:
             return
         # Otherwise, move to the next page
-        skip = base_params["batch_size"]
+        skip = provider_params["batch_size"]
         # Loop through pages
         while True:
             # Error handling for if we exceed API search limit - go to fallbacks
@@ -880,7 +880,7 @@ def iter_medical_organizations(provider_params):
             page_params["state"] = state
             page_params["enumeration_type"] = "NPI-2"
             # use batch size defined in provider_params
-            page_params["limit"] = base_params["batch_size"]
+            page_params["limit"] = provider_params["batch_size"]
             page_params["skip"] = skip
             # pass params to API for this page
             page_data = make_request(page_params)
@@ -898,10 +898,10 @@ def iter_medical_organizations(provider_params):
             for row in page_organizations:
                 # put organisation into normalised row
                 yield convert_organization(row)
-            if (len(page_organizations) < base_params["batch_size"]):
+            if (len(page_organizations) < provider_params["batch_size"]):
                 return
             # Move to next batch.
-            skip += base_params["batch_size"]
+            skip += provider_params["batch_size"]
     
     return
 
