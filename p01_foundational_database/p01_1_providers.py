@@ -391,51 +391,53 @@ def iter_propublica_nonprofits(provider_params):
         """
         # Initialize first page as 0
         page = 0
-        # Use a copy of parameters & add a "page" parameter to the copy
-        params = base_params.copy()
-        params["page"] = page
-        # Use the make_request function to make a partitioned request
-        data = make_request(
-            params
-        )
-        # If no data is available for the partition, skip it.
-        if data is None:
-            print("Skipping unavailable partition:")
-            print(base_params)
-            break
-        # Store # of total results for a partition
-        total_results = data.get("total_results", 0)
-        # Store # of pages for a partition
-        num_pages = data.get("num_pages", 0)
-        # Get number of organizations in partition
-        organizations = data.get("organizations", [])
-        # Prints to help with debugging
-        print("Partition:", base_params, "|", "Page:", page, "|", "Total:", 
-              total_results, "|", "Pages:",num_pages)
-        # Return normalized row of data for each organisation
-        for row in organizations:
-            yield {
-                "name_to_search": row.get("name"),
-                "source_id": str(row.get("ein")),
-                "entity_status": None,
-                "source": provider_params["source"],
-                "state": row.get("state"),
-                "date_registration": None
-            }
-        # if no organizations found, stop.
-        if not organizations:
-            break
-        # Limitation: if there are more than 10,000 results in a given
-        # partition, this will break. #TODO would be good to add a workaround.
-        # For now, simply continue as if 10,000 is the true number of 
-        # organisations in the partition, when this occurs.
-        if page >= num_pages - 1:
-            if total_results >= 10000:
-                print("Reached ProPublica's " "10,000-record limit for partition:")
+        # Initialize loop
+        while True:
+            # Use a copy of parameters & add a "page" parameter to the copy
+            params = base_params.copy()
+            params["page"] = page
+            # Use the make_request function to make a partitioned request
+            data = make_request(
+                params
+            )
+            # If no data is available for the partition, skip it.
+            if data is None:
+                print("Skipping unavailable partition:")
                 print(base_params)
-            break
-        # Go to the next page.
-        page += 1
+                break
+            # Store # of total results for a partition
+            total_results = data.get("total_results", 0)
+            # Store # of pages for a partition
+            num_pages = data.get("num_pages", 0)
+            # Get number of organizations in partition
+            organizations = data.get("organizations", [])
+            # Prints to help with debugging
+            print("Partition:", base_params, "|", "Page:", page, "|", "Total:", 
+                  total_results, "|", "Pages:",num_pages)
+            # Return normalized row of data for each organisation
+            for row in organizations:
+                yield {
+                    "name_to_search": row.get("name"),
+                    "source_id": str(row.get("ein")),
+                    "entity_status": None,
+                    "source": provider_params["source"],
+                    "state": row.get("state"),
+                    "date_registration": None
+                }
+            # if no organizations found, stop.
+            if not organizations:
+                break
+            # Limitation: if there are more than 10,000 results in a given
+            # partition, this will break. #TODO would be good to add a workaround.
+            # For now, simply continue as if 10,000 is the true number of 
+            # organisations in the partition, when this occurs.
+            if page >= num_pages - 1:
+                if total_results >= 10000:
+                    print("Reached ProPublica's " "10,000-record limit for partition:")
+                    print(base_params)
+                break
+            # Go to the next page.
+            page += 1
         return
     return
 
