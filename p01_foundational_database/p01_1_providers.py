@@ -102,9 +102,12 @@ def iter_massachusetts_entities(provider_params):
     """
     Pull employers list from Massachusetts Corp Search aspx.
     Callable via iter_entities, then passed into a dataframe.
-    Results are yielded
+    Results are yielded.
     """
     def parse_massachusetts_results(html):
+        """
+        Function to read rows of companies from MA corporations table
+        """
         # Initialize empty list of entities
         entities = []
         # Initialize soup object
@@ -141,6 +144,12 @@ def iter_massachusetts_entities(provider_params):
             )
         # Return populated entities list
         return entities
+    
+    def get_total_pages(html):
+        """
+        Helper function to determine total number of pages on webpage
+        """
+        return
     return
 
 def iter_new_york_entities(provider_params):
