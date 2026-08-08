@@ -924,7 +924,93 @@ def iter_universities(provider_params):
     # get endpoint url from provider params 
     endpoint_url = provider_params["endpoint_url"]
     api_key = cred.COLLEGE_SCORECARD_API_KEY
-    return
+    # Check for API key
+    if not api_key:
+        raise RuntimeError("College Scorecard API key is required.")
+    batch_size = provider_params.get("batch_size", 100)
+    # start pagination at 0
+    page = 0
+    # loop through pages
+    while True:
+        params = {
+            "api_key": api_key,
+            "fields": ("id," "school.name," "school.city," "school.state"),
+            "_page": page,
+            "_per_page": batch_size
+        }
+        try:
+            # send request to the API
+            response = requests.get(
+                endpoint_url,
+                params=params,
+                timeout=60
+            )
+            # Handle errors 
+            if response.status_code == 400:
+                # Return error text as text or json
+                try:
+                    error_data = response.json()
+                except ValueError:
+                    error_data = response.text
+                # raise an error
+                raise RuntimeError(
+                    "College Scorecard API rejected "
+                    f"the request: {error_data}"
+                )
+            response.raise_for_status()
+        # Handle timeout, connection, and request exceptions
+        except Timeout as exc:
+            raise RuntimeError("College Scorecard API request timed out.") from exc
+        except ConnectionError as exc:
+            raise RuntimeError("College Scorecard API connection failed.") from exc
+        except RequestException as exc:
+            raise RuntimeError(f"College Scorecard API error: {exc}") from exc
+        # Get data as json response
+        data = response.json()
+        # get results, metadata, and total page counts from json 
+        results = data.get("results", [])
+        metadata = data.get("metadata", {})
+        total = metadata.get("total")
+        # logging
+        print(f"College Scorecard page {page} | {len(results)} institutions"
+            + (f" | total {total}" if total is not None else ""))
+        # if no results returned, stop
+        if not results:
+            break
+        # loop through the results
+        for institution in results:
+            # get id, name, and state for each institution
+            unit_id = institution.get("id")
+            institution_name = institution.get("school.name")
+            state = institution.get("school.state")
+            # stop if we have no unit id or no institution name
+            if not unit_id:
+                continue
+            if not institution_name:
+                continue
+            # yield a normalized row of data
+            yield {
+                "name_to_search": institution_name,
+                "state": state or "",
+                "source_id": str(unit_id),
+                "entity_status": "Active",
+                "source": provider_params["source"]
+            }
+    
+    
+        # Handle moving to the next page (if there is one)
+        if total is not None:
+            if ((page + 1) * batch_size >= total):
+                break
+        elif len(results) < batch_size:
+            break
+        # increase page by 1
+        page += 1
+        # Let API rest briefly
+        time.sleep(
+            0.1
+        )
+
 
 def iter_entities():
     return
