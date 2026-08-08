@@ -305,6 +305,16 @@ def iter_new_york_entities(provider_params):
             response.raise_for_status()
             records = response.json()
             break
+        except (Timeout,ConnectionError,RequestException) as e:
+            print(f"Request failed attempt {attempt + 1}/{retries})")
+            print(e)
+            # If we're at the last attempt in the loop, stop
+            if attempt == retries - 1:
+                raise
+            sleep_time = 5 * (attempt + 1)
+            print(f"Retrying in {sleep_time} seconds...")
+            time.sleep(sleep_time)
+            
     return
 
 def iter_entities():
