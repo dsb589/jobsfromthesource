@@ -120,7 +120,10 @@ def iter_massachusetts_entities(provider_params):
         # If we dont find the corporations table, return nothing
         if not search_table:
             return []
-
+        # Loop through the table looking for grid objects
+        for row in search_table.find_all("tr", class_=["GridRow", "GridAltRow"]):
+            # Find individual table cells
+            cells = row.find_all("td")
 
         return entities
     return
