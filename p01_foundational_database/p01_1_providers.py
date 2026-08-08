@@ -578,6 +578,37 @@ def iter_medical_organizations(provider_params):
         """
         Get a normalized row of data from a single organisation
         """
+        # Acquire basic organisation info, e.g. its name & other metadata
+        basic_info= row.get("basic", {})
+        # Get address of organisation
+        addresses = row.get("addresses", [])
+
+        # Look for primary practice location
+        practice_address = None
+        for address in addresses:
+            # Set to practice_address if specified as LOCATION in data
+            if (address.get("address_purpose") == "LOCATION"):
+                practice_address = address
+                break
+        # If we can't find anything marked LOCATION, use first address in list.
+        if practice_address is None:
+            # First check that we have any addresses available at all.
+            if addresses:   
+                # If we do, take the first one.
+                practice_address = addresses[0]
+            else:
+                # Otherwise return nothing.
+                practice_address = {}
+        # Get normalized table for the practice
+        return {
+            "name_to_search": basic_info.get("organization_name"),
+            "source_id": row.get("number"),
+            "entity_status": basic_info.get("status"),
+            "source": provider_params["source"],
+            "state": practice_address.get("state"),
+            "date_registration": basic_info.get("enumeration_date")
+        }
+
         return
     def get_partition_results(state, partition_params, description):
         """
