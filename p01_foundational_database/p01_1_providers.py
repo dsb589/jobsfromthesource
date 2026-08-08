@@ -996,8 +996,7 @@ def iter_universities(provider_params):
                 "entity_status": "Active",
                 "source": provider_params["source"]
             }
-    
-    
+            
         # Handle moving to the next page (if there is one)
         if total is not None:
             if ((page + 1) * batch_size >= total):
