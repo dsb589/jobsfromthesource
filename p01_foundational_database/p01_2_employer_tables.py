@@ -160,6 +160,21 @@ def deduplicate_employers(df, apply_filters=True):
     Function to normalize names in the df and deduplicate them
     returns df
     """
+    # start by making a copy of input df
+    employer_df = df.copy()
+    before = len(df)
+    # get normalized names for the employers in the df
+    employer_df["dedupe_name"] = employer_df["name_to_search"].fillna("").str.lower().str.replace(r"[^a-z0-9]", "", regex=True)
+    if apply_filters:
+        # deduplicate based on normalized name + state
+        employer_df = employer_df.drop_duplicates(subset=["dedupe_name", "state"], keep="first")
+    # drop the new deduplicator column
+    employer_df = employer_df.drop(columns=["dedupe_name"])
+    after = len(df)
+    print("Before:", before)
+    print("After:", after)
+    print("Removed:", before - after)
+    return employer_df
     
 def analyze_website_queue(df):
     "Function to print basic analysis of cleaned df"
