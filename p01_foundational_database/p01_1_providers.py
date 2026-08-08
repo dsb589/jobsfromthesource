@@ -291,7 +291,8 @@ def iter_new_york_entities(provider_params):
     params = {
         "$limit": provider_params["batch_size"],
         "$offset": offset,
-        "$order": provider_params["id_col"]
+        "$order": provider_params["id_col"],
+        "$select": provider_params["select_cond"]
     }
     return
 
