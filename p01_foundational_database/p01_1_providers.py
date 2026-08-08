@@ -129,6 +129,17 @@ def iter_massachusetts_entities(provider_params):
             # Stop searching if no name link 
             if not name_link:
                 continue
+            # Get fields from individual row and add to entities list.
+            entities.append(
+                {
+                    "legal_name": name_link.get_text(" ", strip=True).strip("; "),
+                    "source_id": cells[0].get_text(strip=True),
+                    "entity_status": "Active",
+                    "source": provider_params["source"],
+                    "state": provider_params["state"]
+                }
+            )
+        # Return populated entities list
         return entities
     return
 
