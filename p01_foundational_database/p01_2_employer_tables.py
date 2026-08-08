@@ -128,7 +128,33 @@ def create_website_queue(df, registry_size_cutoff=100000, apply_filters=True):
     employers.
     returns df
     """
-    
+    # start by making a copy of input df
+    employer_df = df.copy()
+    # by default give websites a tier 3 priority
+    employer_df["website_priority_tier"] = "tier_3"
+    if len(employer_df) > registry_size_cutoff:
+        # Define tier 1 orgs for large registries
+        employer_df.loc[(employer_df["employer_quality_score"] >= 7) |
+                        (employer_df["website_priority_score"] >= 6),
+                        "website_priority_tier"] = "tier_1"
+        # define tier 2 orgs for large registries
+        employer_df.loc[(employer_df["employer_quality_score"] >= 4) &
+                        (employer_df["has_business_signal"]),
+                        "website_priority_tier"] = "tier_2"
+    else:
+        # Define tier 1 orgs
+        employer_df.loc[(employer_df["employer_quality_score"] >= 6) |
+                        (employer_df["website_priority_score"] >= 5),
+                        "website_priority_tier"] = "tier_1"
+        # define tier 2 orgs
+        employer_df.loc[(employer_df["employer_quality_score"] >= 3) &
+                        (employer_df["has_business_signal"]),
+                        "website_priority_tier"] = "tier_2"
+    if apply_filters:
+        # filter out tier 3's
+        employer_df = employer_df[employer_df["website_priority_tier"].isin(["tier_1", "tier_2"])]
+    return employer_df
+
 def deduplicate_employers(df, apply_filters=True):
     """
     Function to normalize names in the df and deduplicate them
