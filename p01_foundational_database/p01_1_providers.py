@@ -330,7 +330,9 @@ def iter_new_york_entities(provider_params):
             }
         # Increase the offset by the batch size
         offset += provider_params["batch_size"]
-    
+
+def iter_propublica_nonprofits(provider_params):
+    return
 
 def iter_entities():
     return
