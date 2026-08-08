@@ -157,6 +157,13 @@ def iter_massachusetts_entities(provider_params):
         if page_count_object:
             return int(page_count_object.group(1))
         return 1
+    
+    # Main Block of function; calls subfunctions.
+    # Initialize options object for web scraping
+    options = Options()
+    # Initialize driver object. Headless does not work for this site currently.
+    driver = webdriver.Chrome(options=options)
+    
     return
 
 def iter_new_york_entities(provider_params):
