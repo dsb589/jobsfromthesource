@@ -338,6 +338,52 @@ def iter_propublica_nonprofits(provider_params):
     Results are yielded
     """
     def make_request(params):
+        """
+        Make an API request
+        """
+        # try the request 5 times
+        retries = 5
+        # Loop through each attempt (of the allowed retries)
+        for attempt in range(retries):
+            try:
+                # Make the request
+                response = requests.get(
+                    # pull url from provider_params
+                    url=provider_params["endpoint_url"],
+                    params=params,
+                    timeout=30
+                )
+                # If we get an error 404, stop
+                if response.status_code == 404:
+                    print("ProPublica returned 404 for partition:")
+                    print(params)
+                    return None
+                # Raise any other errors, if applicable
+                response.raise_for_status()
+                # Return json object
+                return response.json()
+            # Handle timeout and connection exceptions
+            except (Timeout,ConnectionError) as e:
+                print(f"ProPublica request failed (attempt {attempt + 1}/{retries})")
+                print(e)
+                # If we exceed number of allowed retries, stop
+                if attempt == retries - 1:
+                    raise
+                # Retry after x seconds
+                sleep_time = 5 * (attempt + 1)
+                print(f"Retrying in {sleep_time} seconds...")
+                time.sleep(sleep_time)
+            #  Handle all other errors the same way
+            except RequestException as e:
+                print(f"ProPublica request failed (attempt {attempt + 1}/{retries})")
+                print(e)
+                # If we exceed number of allowed retries, stop
+                if attempt == retries - 1:
+                    raise
+                # Retry after x seconds
+                sleep_time = 5 * (attempt + 1)
+                print(f"Retrying in {sleep_time} seconds...")
+                time.sleep(sleep_time)
         return
     def get_partition_results(base_params):
         return
