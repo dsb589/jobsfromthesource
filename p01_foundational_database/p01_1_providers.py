@@ -540,16 +540,34 @@ def iter_medical_organizations(provider_params):
             taxonomy_prefixes.append(first + second + "*")
 
     def make_request(params):
+        """
+        Make API request
+        """
         return
     def convert_organization(row):
+        """
+        Get a normalized row of data from a single organisation
+        """
         return
     def get_partition_results(state, partition_params, description):
+        """
+        Run a partitioned call through the API
+        """
         return
     def get_taxonomy_partitions(state, zip_code):
+        """
+        Partition by medical org taxonomies
+        """
         return
     def get_exact_zip_results(state, zip_code):
+        """
+        Precise zip code partition
+        """
         return
     def get_zip_partition(state, zip_prefix):
+        """
+        3-digit zip code partition
+        """
         return
     
     return
