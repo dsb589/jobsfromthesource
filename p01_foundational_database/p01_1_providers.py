@@ -527,7 +527,22 @@ def iter_propublica_nonprofits(provider_params):
                 continue
                 
 def iter_medical_organizations(provider_params):
+    
+    def make_request(params):
+        return
+    def convert_organization(row):
+        return
+    def get_partition_results(state, partition_params, description):
+        return
+    def get_taxonomy_partitions(state, zip_code):
+        return
+    def get_exact_zip_results(state, zip_code):
+        return
+    def get_zip_partition(state, zip_prefix):
+        return
+    
     return
+
 
 def iter_entities():
     return
