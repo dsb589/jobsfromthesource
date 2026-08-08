@@ -149,7 +149,14 @@ def iter_massachusetts_entities(provider_params):
         """
         Helper function to determine total number of pages on webpage
         """
-        return
+        # Get text items in html on page
+        text = BeautifulSoup(html, "html.parser").get_text(" ", strip=True)
+        # Look for number of pages in the html
+        page_count_object = re.search(r"Number of pages:\s*(\d+)", text)
+        # If object is found, get the total number
+        if page_count_object:
+            return int(page_count_object.group(1))
+        return 1
     return
 
 def iter_new_york_entities(provider_params):
