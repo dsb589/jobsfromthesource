@@ -1,5 +1,6 @@
 import pandas as pd 
 from definables import constants as dfn
+import os
 
 def clean_employer_dataframe(df, apply_filters=True):
     """
@@ -223,3 +224,15 @@ def run_first_cleaning_pass(df, apply_filters=True):
     deduplicated_df = deduplicate_employers(website_queue, apply_filters=apply_filters)
     print("SHAPE AFTER deduplicate_employers().", deduplicated_df.shape)
     return deduplicated_df
+
+def main():
+    # open stored parquet files from p01_1
+    ct_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "ct_df.parquet"))
+    ma_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "ma_df.parquet"))
+    ny_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "ny_df.parquet"))
+    nonprofits_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "nonprofits_df.parquet"))
+    medical_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "medical_df.parquet"))
+    universities_df = pd.read_parquet(os.path.join("p01_outputs","p01_1_providers_output", "universities_df.parquet"))
+    census_towns_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "census_towns_df.parquet"))
+    census_places_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "census_places_df.parquet"))
+
