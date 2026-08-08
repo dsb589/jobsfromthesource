@@ -1169,14 +1169,15 @@ def main():
     census_towns_df = pd.DataFrame(iter_entities(entity="Census_Towns"))
     census_places_df = pd.DataFrame(iter_entities(entity="Census_Places"))
     # export them into parquet files
-    ct_df.to_parquet(os.path.join("p01_1_providers_output", "ct_df.parquet"))
-    ma_df.to_parquet(os.path.join("p01_1_providers_output", "ma_df.parquet"))
-    ny_df.to_parquet(os.path.join("p01_1_providers_output", "ny_df.parquet"))
-    nonprofits_df.to_parquet(os.path.join("p01_1_providers_output", "nonprofits_df.parquet"))
-    medical_df.to_parquet(os.path.join("p01_1_providers_output", "medical_df.parquet"))
-    universities_df.to_parquet(os.path.join("p01_1_providers_output", "universities_df.parquet"))
-    census_towns_df.to_parquet(os.path.join("p01_1_providers_output", "census_towns_df.parquet"))
-    census_places_df.to_parquet(os.path.join("p01_1_providers_output", "census_places_df.parquet"))
+    ct_df.to_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "ct_df.parquet"))
+    ma_df.to_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "ma_df.parquet"))
+    ny_df.to_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "ny_df.parquet"))
+    nonprofits_df.to_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "nonprofits_df.parquet"))
+    medical_df.to_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "medical_df.parquet"))
+    universities_df.to_parquet(os.path.join("p01_outputs","p01_1_providers_output", "universities_df.parquet"))
+    census_towns_df.to_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "census_towns_df.parquet"))
+    census_places_df.to_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "census_places_df.parquet"))
+
 
 if __name__ == "__main__":
     main()
