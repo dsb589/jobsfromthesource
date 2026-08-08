@@ -294,6 +294,8 @@ def iter_new_york_entities(provider_params):
         "$order": provider_params["id_col"],
         "$select": provider_params["select_cond"]
     }
+    # Allow 5 attempts at API call
+    retries = 5
     return
 
 def iter_entities():
