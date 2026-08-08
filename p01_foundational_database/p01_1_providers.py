@@ -543,7 +543,37 @@ def iter_medical_organizations(provider_params):
         """
         Make API request
         """
-        return
+        # Retry the API request a max of 5 times
+        retries = 5
+        # Loop through n requests as needed
+        for attempt in range(retries):
+            try:
+                response = requests.get(
+                    url=provider_params["endpoint_url"],
+                    params=params,
+                    timeout=30
+                )
+                response.raise_for_status()
+                data = response.json()
+                # Look for errors returned in output; this can occur
+                # even if the call itself worked
+                if data.get("Errors"):
+                    # Show the error
+                    return {"__npi_error__": data["Errors"]}
+                return data
+            # Exception block
+            except (Timeout,ConnectionError, RequestException) as e:
+                # Logging
+                print("NPI request failed (attempt {attempt + 1}/{retries})")
+                print(e)
+                # Stop if we are past the max # of retries
+                if attempt == retries - 1:
+                    raise
+                # Wait and try again otherwise
+                sleep_time = 5 * (attempt + 1)
+                print(f"Retrying in {sleep_time} seconds...")
+                time.sleep(sleep_time)
+
     def convert_organization(row):
         """
         Get a normalized row of data from a single organisation
