@@ -260,6 +260,8 @@ def main():
                                                     "p01_2_employer_tables_output", 
                                                     "p01_2.parquet"))
 
+if __name__ == "__main__":
+    main()
 
 
     
