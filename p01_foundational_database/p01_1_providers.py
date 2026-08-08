@@ -1009,6 +1009,10 @@ def iter_universities(provider_params):
         # Let API rest briefly
         time.sleep(0.1)
 
+def iter_census_towns():
+
+def iter_census_places():
+    
 
 def iter_entities():
     return
