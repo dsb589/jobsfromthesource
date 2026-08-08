@@ -609,12 +609,59 @@ def iter_medical_organizations(provider_params):
             "date_registration": basic_info.get("enumeration_date")
         }
 
-        return
+        
     def get_partition_results(state, partition_params, description):
         """
         Run a partitioned call through the API
         """
-        return
+        # Initialize skip
+        skip = 0
+        # Basic while loop to repeat until failure
+        while True:
+            # Amend parameters as a copy
+            params = partition_params.copy()
+            params["state"] = state
+            params["enumeration_type"] = "NPI-2"
+            params["limit"] = params["batch_size"]
+            params["skip"] = skip
+            # Access data via api by passing copied params
+            data = make_request(params)
+            # Consider __npi_error__ to be an error, even if something returns.
+            # This is just a log; we don't stop the script in this case.
+            if "__npi_error__" in data:
+                errors = data["__npi_error__"]
+                print()
+                print("NPI partition returned an API error:")
+                print(f"State: {state}")
+                print(f"Partition: {description}")
+                print(errors)
+
+                return
+            
+            # Pull organizations list
+            organizations = data.get("results", [])
+            # logging.
+            print(f"NPI: {state} | {description} | skip {skip} | {len(organizations)} organizations")
+            # Put organisations into normalized rows of data.
+            for row in organizations:
+                yield convert_organization(row)
+            # If we don't have any organisations, or if we have
+            # fewer organisations than the batch size, we stop and move on.
+            if not organizations:
+                return
+            if len(organizations) < params["batch_size"]:
+                return
+            # The API only allows skip through 1000. If we exceed this, 
+            # give a warning and move on.
+            if skip >= dfn.NPI_API_LIMIT:
+                print()
+                print("WARNING: NPI partition reached the API skip limit.")
+                print(f"State: {state}")
+                print(f"Partition: {description}")
+                return
+            # offset skip by the batch size.
+            skip += params["batch_size"]
+
     def get_taxonomy_partitions(state, zip_code):
         """
         Partition by medical org taxonomies
