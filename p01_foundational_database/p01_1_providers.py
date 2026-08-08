@@ -691,149 +691,63 @@ def iter_medical_organizations(provider_params):
                 # Skip the taxonomy prefix if this occurs.
                 print("Skipping taxonomy prefix {taxonomy_prefix}: {errors}")
                 continue
-
-            organizations = data.get(
-                "results",
-                []
-            )
-
-            #
-            # Nothing in this taxonomy prefix.
-            #
-
+            # Get list of organizations with taxonomy prefix. If none, stop.
+            organizations = data.get("results", [])
             if not organizations:
-
                 continue
+            # logging
+            print("NPI taxonomy partition: {state} / {zip_code} / {taxonomy_prefix} | "
+                  f"result_count {len(organizations)}")
 
-            print(
-                "NPI taxonomy partition: "
-                f"{state} / "
-                f"{zip_code} / "
-                f"{taxonomy_prefix} | "
-                f"result_count "
-                f"{len(organizations)}"
-            )
-
-            #
-            # Yield the first page.
-            #
-
+            # get first page
             for row in organizations:
-
-                yield convert_organization(
-                    row
-                )
-
-            #
-            # If fewer than batch_size records were
-            # returned, this taxonomy partition is
-            # exhausted.
-            #
-
-            if len(organizations) < batch_size:
-
+                yield convert_organization(row)
+            # Stop the partition if we have less records than the batch size
+            if len(organizations) < base_params["batch_size"]:
                 continue
-
-            #
-            # More pages exist. Continue pagination.
-            #
-
-            skip = batch_size
-
+            # If more pages exist, go on to the next page.
+            skip = base_params["batch_size"]
+            # Look for cases where we are continuing to exceed the skip limit
             while True:
-
-                if skip > MAX_SKIP:
-
+                if skip > dfn.NPI_API_LIMIT:
+                    # logging
                     print()
-                    print(
-                        "WARNING: taxonomy partition "
-                        "also reached API skip limit."
-                    )
-
-                    print(
-                        f"State: {state}"
-                    )
-
-                    print(
-                        f"ZIP: {zip_code}"
-                    )
-
-                    print(
-                        f"Taxonomy prefix: "
-                        f"{taxonomy_prefix}"
-                    )
-
+                    print("WARNING: taxonomy partition also reached API skip limit.")
+                    print(f"State: {state}")
+                    print(f"ZIP: {zip_code}")
+                    print(f"Taxonomy prefix: {taxonomy_prefix}")
                     break
-
+                # Set page parameters 
                 page_params = partition.copy()
-
-                page_params[
-                    "state"
-                ] = state
-
-                page_params[
-                    "enumeration_type"
-                ] = "NPI-2"
-
-                page_params[
-                    "limit"
-                ] = batch_size
-
-                page_params[
-                    "skip"
-                ] = skip
-
-                page_data = make_request(
-                    page_params
-                )
-
-                #
+                page_params["state"] = state
+                page_params["enumeration_type"] = "NPI-2"
+                page_params["limit"] = base_params["batch_size"]
+                page_params["skip"] = skip
+                # Pass page params to API
+                page_data = make_request(page_params)
                 # Ignore invalid taxonomy pages.
-                #
-
                 if "__npi_error__" in page_data:
-
-                    print(
-                        "Skipping remaining pages "
-                        "for taxonomy prefix "
-                        f"{taxonomy_prefix}: "
-                        f"{page_data['__npi_error__']}"
+                    # logging
+                    print("Skipping remaining pages for taxonomy prefix "
+                        f"{taxonomy_prefix}: {page_data['__npi_error__']}"
                     )
-
                     break
-
-                page_organizations = (
-                    page_data.get(
-                        "results",
-                        []
-                    )
-                )
-
-                print(
-                    f"NPI: {state} | "
-                    f"ZIP {zip_code} | "
-                    f"taxonomy "
-                    f"{taxonomy_prefix} | "
-                    f"skip {skip} | "
-                    f"{len(page_organizations)} "
-                    f"organizations"
-                )
-
-                for row in page_organizations:
-
-                    yield convert_organization(
-                        row
-                    )
-
-                if (
-                    len(page_organizations)
-                    < batch_size
-                ):
-
+                # put organizations on page into list
+                page_organizations = (page_data.get("results", []))
+                # logging
+                print(f"NPI: {state} | ZIP {zip_code} | taxonomy "
+                    f"{taxonomy_prefix} | skip {skip} | {len(page_organizations)} "
+                    f"organizations")
+                # loop through all orgs on the page
+                for row in page_organizations:  
+                    # convert each organization into normalized row
+                    yield convert_organization(row)
+                # Stop when there are fewer orgs on the page than the batch size
+                if (len(page_organizations) < base_params["batch_size"]):
                     break
-
-                skip += batch_size
-        return
+                # Move to next batch
+                skip += base_params["batch_size"]
+        
     def get_exact_zip_results(state, zip_code):
         """
         Precise zip code partition
