@@ -1,6 +1,7 @@
 import sys
 from definables import provider_params as pp
 from definables import constants as dfn
+from definables import credentials as cred
 import requests
 from bs4 import BeautifulSoup
 from requests.exceptions import (
@@ -920,7 +921,9 @@ def iter_universities(provider_params):
     Callable via iter_entities, then passed into a dataframe.
     Results are yielded
     """
-    
+    # get endpoint url from provider params 
+    endpoint_url = provider_params["endpoint_url"]
+    api_key = cred.COLLEGE_SCORECARD_API_KEY
     return
 
 def iter_entities():
