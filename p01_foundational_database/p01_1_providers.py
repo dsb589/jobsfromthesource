@@ -412,6 +412,16 @@ def iter_propublica_nonprofits(provider_params):
         # Prints to help with debugging
         print("Partition:", base_params, "|", "Page:", page, "|", "Total:", 
               total_results, "|", "Pages:",num_pages)
+        # Return normalized row of data for each organisation
+        for row in organizations:
+            yield {
+                "name_to_search": row.get("name"),
+                "source_id": str(row.get("ein")),
+                "entity_status": None,
+                "source": provider_params["source"],
+                "state": row.get("state"),
+                "date_registration": None
+            }
 
         return
     return
