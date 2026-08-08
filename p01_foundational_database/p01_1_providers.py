@@ -285,6 +285,10 @@ def iter_new_york_entities(provider_params):
     Callable via iter_entities, then passed into a dataframe.
     Results are yielded
     """
+    # initialize offset to determine starting point for API call
+    offset = 0
+    
+    
     return
 
 def iter_entities():
