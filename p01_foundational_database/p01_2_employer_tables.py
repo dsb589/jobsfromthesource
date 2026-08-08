@@ -235,4 +235,32 @@ def main():
     universities_df = pd.read_parquet(os.path.join("p01_outputs","p01_1_providers_output", "universities_df.parquet"))
     census_towns_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "census_towns_df.parquet"))
     census_places_df = pd.read_parquet(os.path.join("p01_outputs", "p01_1_providers_output", "census_places_df.parquet"))
+    # Run each df, individually, through run_first_cleaning_pass
+    ct_cleaned_df = run_first_cleaning_pass(ct_df)
+    ny_cleaned_df = run_first_cleaning_pass(ny_df)
+    ma_cleaned_df = run_first_cleaning_pass(ma_df)
+    nonprofit_cleaned_df = run_first_cleaning_pass(nonprofits_df)
+    medical_cleaned_df = run_first_cleaning_pass(medical_df)
+    universities_cleaned_df = run_first_cleaning_pass(universities_df, apply_filters=False)
+    census_towns_cleaned_df = run_first_cleaning_pass(census_towns_df, apply_filters=False)
+    census_places_cleaned_df = run_first_cleaning_pass(census_places_df, apply_filters=False)
+    # concat all cleaned dfs
+    all_employer_cleaned_df = pd.concat([
+        ct_cleaned_df,
+        ny_cleaned_df,
+        ma_cleaned_df,
+        nonprofit_cleaned_df,
+        medical_cleaned_df,
+        universities_cleaned_df,
+        census_towns_cleaned_df,
+        census_places_cleaned_df
+        ])
+    # export to parquet
+    all_employer_cleaned_df.to_parquet(os.path.join("p01_outputs",
+                                                    "p01_2_employer_tables_output", 
+                                                    "p01_2.parquet"))
+
+
+
+    
 
