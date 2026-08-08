@@ -527,7 +527,18 @@ def iter_propublica_nonprofits(provider_params):
                 continue
                 
 def iter_medical_organizations(provider_params):
-    
+    """
+    Pull employers list from NPI Registry API.
+    Callable via iter_entities, then passed into a dataframe.
+    Results are yielded
+    """
+    # Get all possible 2-letter taxonomy prefixes for taxonomy partition searches,
+    # to use as needed
+    taxonomy_prefixes = []
+    for first in dfn.LETTER_STRING:
+        for second in dfn.LETTER_STRING:
+            taxonomy_prefixes.append(first + second + "*")
+
     def make_request(params):
         return
     def convert_organization(row):
