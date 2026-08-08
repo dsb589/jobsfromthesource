@@ -1008,10 +1008,20 @@ def iter_universities(provider_params):
         # Let API rest briefly
         time.sleep(0.1)
 
-def iter_census_towns():
-
-def iter_census_places():
-    
+def iter_census_towns(provider_params):
+    """
+    Pull towns list from tigerweb API.
+    Callable via iter_entities, then passed into a dataframe.
+    Results are yielded
+    """
+    endpoint_url = provider_params["endpoint_url"]
+    source = provider_params["source"]
+def iter_census_places(provider_params):
+    """
+    Pull US Census places list from tigerweb API.
+    Callable via iter_entities, then passed into a dataframe.
+    Results are yielded
+    """
 
 def iter_entities():
     return
