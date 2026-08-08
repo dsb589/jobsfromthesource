@@ -31,6 +31,15 @@ def remove_financial_entities(df, apply_filters=True):
     employers.
     returns df
     """
+    # start by making a copy of input df
+    employer_df = df.copy()
+    # only apply filters if argument is True
+    if apply_filters:
+        financial_patterns = "|".join(dfn.FINANCIAL_TERMS)
+        # Get name series from df
+        name = employer_df["name_to_search"].str.lower()
+        employer_df = employer_df[~name.str.contains(financial_patterns, na=False)]
+    return employer_df
     
 def apply_employer_filters(df, apply_filters=True):
     """

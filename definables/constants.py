@@ -44,3 +44,14 @@ NON_EMPLOYER_TERMS = [
     "capital",
     "investments"
 ]
+
+FINANCIAL_TERMS = [
+    "fund",
+    "funds",
+    "equity",
+    "investment",
+    "investments",
+    "asset management",
+    "partners lp",
+    "real estate investment"
+]
