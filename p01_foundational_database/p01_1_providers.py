@@ -1014,8 +1014,16 @@ def iter_census_towns(provider_params):
     Callable via iter_entities, then passed into a dataframe.
     Results are yielded
     """
+    # Initial variables - pulled from provider_params directly
     endpoint_url = provider_params["endpoint_url"]
     source = provider_params["source"]
+    states = provider_params["states"]
+    for state_abbr, state_fips in states.items():
+        params = {
+            "where": f"STATE='{state_fips}'",
+            "outFields": "GEOID,NAME,STATE",
+            "returnGeometry": "false",
+            "f": "json"}
 def iter_census_places(provider_params):
     """
     Pull US Census places list from tigerweb API.
