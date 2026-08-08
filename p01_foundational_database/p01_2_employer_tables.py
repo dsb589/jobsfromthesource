@@ -178,6 +178,31 @@ def deduplicate_employers(df, apply_filters=True):
     
 def analyze_website_queue(df):
     "Function to print basic analysis of cleaned df"
+    print("Total queued:", len(df))
+    if "employer_category" in df.columns:
+        print("Employer categories:")
+        print(df["employer_category"].value_counts())
+    if "employer_quality_score" in df.columns:
+        print("Quality score distribution:")
+        print(df["employer_quality_score"].describe())
+    if "website_priority_score" in df.columns:
+        print("Website priority distribution:")
+        print(df["website_priority_score"].describe())
+    if "has_business_signal" in df.columns:
+        print("Business signal count:")
+        print(df["has_business_signal"].value_counts())
+    print("Top website discovery candidates:")
+    columns = [
+        column
+        for column in [
+            "name_to_search",
+            "employer_quality_score",
+            "website_priority_score",
+            "employer_category"
+        ]
+        if column in df.columns
+    ]
+    print(df[columns].head(25).to_string(index=False))
     
 def run_first_cleaning_pass(df, apply_filters=True):
     """
