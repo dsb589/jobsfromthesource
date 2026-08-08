@@ -385,6 +385,7 @@ def iter_propublica_nonprofits(provider_params):
                 print(f"Retrying in {sleep_time} seconds...")
                 time.sleep(sleep_time)
         return
+    
     def get_partition_results(base_params):
         """
         Get all available results for a single partition
@@ -438,8 +439,93 @@ def iter_propublica_nonprofits(provider_params):
                 break
             # Go to the next page.
             page += 1
-        return
-    return
+    # main loop: run partitioned requests for each state.
+    for state in dfn.STATES:
+        print(f"Processing Propublica results for {state}")
+        # Process each Propublica NTEE category.
+        for ntee in dfn.NONPROFIT_NTEE_CATEGORIES:
+            base_params = {
+                "state[id]": state,
+                "ntee[id]": ntee
+            }
+            # Make first request with updated base params
+            first_params = base_params.copy()
+            # Set page to 0
+            first_params["page"] = 0
+            # Access basic make request function
+            data = make_request(first_params)
+            # If this state/NTEE combination returns 404, skip.
+            if data is None:
+                print("Skipping unavailable partition:")
+                print(base_params)
+                continue
+            # Find total # of results and total # of pages.
+            total_results = data.get("total_results", 0)
+            num_pages = data.get("num_pages", 0)
+            print()
+            # logging
+            print(f"{state} / NTEE {ntee}: {total_results} results / {num_pages} pages")
+            # Stop if we don't have any results.
+            if total_results == 0:
+                continue
+            # If total_results > 0 and < 10000 we can paginate directly
+            if total_results < 10000:
+                yield from get_partition_results(
+                    base_params
+                )
+                continue
+            # Otherwise, if we exceed 10000 results, we need to partition further.
+            # Logging.
+            print("Partition exceeds 10,000 results:")
+            print(base_params)
+            print("Splitting partition using 501(c) subsection.")
+            # process each 501c subsection
+            for c_code in dfn.NONPROFIT_501C_CODES:
+                sub_partition = {
+                    "state[id]": state,
+                    "ntee[id]": ntee,
+                    "c_code[id]": c_code
+                }
+                # First request for this 501c subsection.
+                first_sub_params = sub_partition.copy()
+                # set page to 0
+                first_sub_params["page"] = 0
+                # Make request to API
+                sub_data = make_request(first_sub_params)
+                # If nothing found, skip
+                if sub_data is None:
+                    # Log
+                    print("Skipping unavailable 501(c) partition:")
+                    print(sub_partition)
+                    continue
+                # get total results and # pages for subsection
+                sub_total = sub_data.get("total_results", 0)
+                sub_pages = sub_data.get("num_pages", 0)
+                # log 
+                print(f"{state} / NTEE {ntee} / 501(c) {c_code}: {sub_total} results / "
+                    f"{sub_pages} pages")
+                # when no results return for the subsection, skip it.
+                if sub_total == 0:
+                    continue
+                # If subsection has > 0 results and less than 10k, we can process it
+                if sub_total < 10000:
+                    yield from get_partition_results(sub_partition)
+                    continue
+                # Otherwise, if we still exceed 10K, we reach a limitation
+                # and need to treat this like the subsection legitimately 
+                # has only 10k results. Seeking workaround.
+                # Log the occurrence:
+                print()
+                print("WARNING: 501(c) partition exceeds "
+                    "ProPublica's 10,000-result limit.")
+                print("Retrieving the maximum accessible 10,000 records.")
+                print("Partition:")
+                print(sub_partition)
+                print(f"Total reported by API: {sub_total}")
+                # Get partition results just for the available 10k, and move on.
+                yield from get_partition_results(sub_partition)
+                continue
+                
 
 def iter_entities():
     return
