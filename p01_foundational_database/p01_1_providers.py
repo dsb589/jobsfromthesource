@@ -121,8 +121,13 @@ def iter_massachusetts_entities(provider_params):
         for row in search_table.find_all("tr", class_=["GridRow", "GridAltRow"]):
             # Find individual table cells
             cells = row.find_all("td")
+            # Find name link
+            name_link = row.find("a")
             # Stop searching if there aren't entries 
             if len(cells) < 3:
+                continue
+            # Stop searching if no name link 
+            if not name_link:
                 continue
         return entities
     return
