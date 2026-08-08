@@ -67,6 +67,7 @@ def employer_priority_score(df):
     Function to assgn priority scores to employers based on key words in their
     name that indicate whether they are or are not employers
     """
+    
 
 
 def create_website_queue(df, registry_size_cutoff=100000, apply_filters=True):

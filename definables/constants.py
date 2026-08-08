@@ -65,3 +65,56 @@ PASSIVE_TERMS = [
     "venture",
     "ventures"
 ]
+
+NEGATIVE_TERMS_SCORES = {
+    "church": -5,
+    "foundation": -5,
+    "association": -5,
+    "lodge": -5,
+    "society": -5,
+    "club": -5,
+    "trust": -4,
+    "holdings": -4,
+    "capital": -4,
+    "realty": -4,
+    "properties": -4,
+    "investments": -4,
+    "ventures": -3
+}
+
+LEGAL_TERMS_SCORES = {
+    r"\binc\b": 1,
+    r"\bincorporated\b": 1,
+    r"\bcorporation\b": 1,
+    r"\bcorp\b": 1,
+    r"\bcompany\b": 1,
+    r"\bco\b": 1,
+    r"\bllc\b": 1,
+    r"\bl\.l\.c\b": 1,
+    r"\blp\b": 1,
+    r"\bllp\b": 1
+}
+
+BUSINESS_TERMS_SCORES = {
+    "manufacturing": 3,
+    "technology": 3,
+    "software": 3,
+    "health": 3,
+    "medical": 3,
+    "engineering": 3,
+    "services": 2,
+    "solutions": 2,
+    "systems": 2,
+    "construction": 2,
+    "restaurant": 2,
+    "foods": 2,
+    "logistics": 2,
+    "transport": 2,
+    "consulting": 2,
+    "design": 2,
+    "studio": 2,
+    "retail": 2,
+    "market": 2,
+    "store": 2,
+    "supply": 2
+}
