@@ -1177,3 +1177,6 @@ def main():
     universities_df.to_parquet(os.path.join("p01_1_providers_output", "universities_df.parquet"))
     census_towns_df.to_parquet(os.path.join("p01_1_providers_output", "census_towns_df.parquet"))
     census_places_df.to_parquet(os.path.join("p01_1_providers_output", "census_places_df.parquet"))
+
+if __name__ == "__main__":
+    main()
