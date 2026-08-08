@@ -1019,11 +1019,21 @@ def iter_census_towns(provider_params):
     source = provider_params["source"]
     states = provider_params["states"]
     for state_abbr, state_fips in states.items():
+        # define params for pass through tigerweb api
         params = {
             "where": f"STATE='{state_fips}'",
             "outFields": "GEOID,NAME,STATE",
             "returnGeometry": "false",
             "f": "json"}
+        # attempt the API call
+        try:
+            response = requests.get(
+                endpoint_url,
+                params=params,
+                timeout=60
+            )
+            response.raise_for_status()
+            
 def iter_census_places(provider_params):
     """
     Pull US Census places list from tigerweb API.
