@@ -296,6 +296,15 @@ def iter_new_york_entities(provider_params):
     }
     # Allow 5 attempts at API call
     retries = 5
+    # Start loop that retries on failure
+    for attempt in range(retries):
+        try:
+            response = requests.get(provider_params["endpoint_url"],
+                                    params=params,
+                                    timeout=30)
+            response.raise_for_status()
+            records = response.json()
+            break
     return
 
 def iter_entities():
