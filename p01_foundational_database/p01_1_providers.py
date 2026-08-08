@@ -915,6 +915,12 @@ def iter_medical_organizations(provider_params):
             yield from get_zip_partition(state, zip_prefix)
             
 def iter_universities(provider_params):
+    """
+    Pull universities list from College Scorecard.
+    Callable via iter_entities, then passed into a dataframe.
+    Results are yielded
+    """
+    
     return
 
 def iter_entities():
