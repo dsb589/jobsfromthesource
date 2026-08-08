@@ -67,8 +67,60 @@ def employer_priority_score(df):
     Function to assgn priority scores to employers based on key words in their
     name that indicate whether they are or are not employers
     """
+    # start by making a copy of input df
+    employer_df = df.copy()
+    # get names series 
+    name = employer_df["name_to_search"].fillna("").str.lower()
+    # initialize employer and website scores as zero
+    employer_df["employer_quality_score"] = 0
+    employer_df["website_priority_score"] = 0
+    # loop through negative terms and assign points where they appear
+    for term, points in dfn.NEGATIVE_TERMS_SCORES.items():
+        # look for names containing negative terms
+        matches = name.str.contains(term, na=False)
+        # add points for matches in the org's name
+        employer_df.loc[matches, "employer_quality_score"] += points
+    # loop through legal terms and assign points where they appear
+    for term, points in dfn.LEGAL_TERMS_SCORES.items():
+        # look for names containing legal terms
+        matches = name.str.contains(term, regex=True, na=False)
+        # add points for matches in the org's name
+        employer_df.loc[matches, "employer_quality_score"] += points
+    # Initialize FALSE series noting whether employer has a business signal
+    has_business_signal = pd.Series(False, index=employer_df.index)
+    # loop through business terms and assign points where they appear
+    for term, points in dfn.BUSINESS_TERMS_SCORES.items():
+        # look for names containing business terms
+        matches = name.str.contains(term, na=False)
+        # amend employer quality score if business matches found
+        employer_df.loc[matches, "employer_quality_score"] += points
+        has_business_signal |= matches
+    # overwrite has business signal column
+    employer_df["has_business_signal"] = has_business_signal
+    # get word count per entry in a series
+    word_count = employer_df["name_to_search"].fillna("").str.split().str.len()
+    # amend website priority scoring depending on # of words
+    employer_df.loc[word_count <= 2, "website_priority_score"] += 3
+    employer_df.loc[word_count == 3, "website_priority_score"] += 2
+    employer_df.loc[word_count >= 5, "website_priority_score"] -= 2
+    # Get length of first word
+    first_word = employer_df["name_to_search"].fillna("").str.split().str[0].str.len()
+    # Amend website priority scoring depending on length of first word
+    employer_df.loc[first_word >= 7, "website_priority_score"] += 2
+    employer_df.loc[has_business_signal, "website_priority_score"] += 2
+    employer_df.loc[name.str.len() < 5,"employer_quality_score"] -= 2
+    # get overall employer score by adding component scores.
+    employer_df["employer_score"] = employer_df["employer_quality_score"] + employer_df["website_priority_score"]
+    # by default, rate the confidence that each row is an employer as 'low'
+    employer_df["employer_category"] = "low_confidence"
+    # Define high confidence
+    employer_df.loc[employer_df["employer_quality_score"] >= 5, "employer_category"] = "high_confidence"
+    # Define medium confidence
+    employer_df.loc[(employer_df["employer_quality_score"] >= 2) &
+                    (employer_df["employer_quality_score"] < 5),
+                    "employer_category"] = "medium_confidence"
+    return employer_df
     
-
 
 def create_website_queue(df, registry_size_cutoff=100000, apply_filters=True):
     """
