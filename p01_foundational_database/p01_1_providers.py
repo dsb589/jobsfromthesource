@@ -108,10 +108,7 @@ def iter_massachusetts_entities(provider_params):
         # Initialize empty list of entities
         entities = []
         # Initialize soup object
-        soup = BeautifulSoup(
-            html,
-            "html.parser"
-        )
+        soup = BeautifulSoup(html, "html.parser")
         # Find corporations search table 
         search_table = soup.find(
             "table",
