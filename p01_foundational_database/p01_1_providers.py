@@ -287,35 +287,50 @@ def iter_new_york_entities(provider_params):
     """
     # initialize offset to determine starting point for API call
     offset = 0
-    # set parameters as constants from provider_params + currnet offset
-    params = {
-        "$limit": provider_params["batch_size"],
-        "$offset": offset,
-        "$order": provider_params["id_col"],
-        "$select": provider_params["select_cond"]
-    }
-    # Allow 5 attempts at API call
-    retries = 5
-    # Start loop that retries on failure
-    for attempt in range(retries):
-        try:
-            response = requests.get(provider_params["endpoint_url"],
-                                    params=params,
-                                    timeout=30)
-            response.raise_for_status()
-            records = response.json()
+    # Initialize a continuous while loop
+    while True:
+        # set parameters as constants from provider_params + currnet offset
+        params = {
+            "$limit": provider_params["batch_size"],
+            "$offset": offset,
+            "$order": provider_params["id_col"],
+            "$select": provider_params["select_cond"]
+        }
+        # Allow 5 attempts at API call
+        retries = 5
+        # Start loop that retries on failure
+        for attempt in range(retries):
+            try:
+                response = requests.get(provider_params["endpoint_url"],
+                                        params=params,
+                                        timeout=30)
+                response.raise_for_status()
+                records = response.json()
+                break
+            except (Timeout,ConnectionError,RequestException) as e:
+                print(f"Request failed attempt {attempt + 1}/{retries})")
+                print(e)
+                # If we're at the last attempt in the loop, stop
+                if attempt == retries - 1:
+                    raise
+                sleep_time = 5 * (attempt + 1)
+                print(f"Retrying in {sleep_time} seconds...")
+                time.sleep(sleep_time)
+        # Check if any records have been populated. If not, stop.
+        if not records:
             break
-        except (Timeout,ConnectionError,RequestException) as e:
-            print(f"Request failed attempt {attempt + 1}/{retries})")
-            print(e)
-            # If we're at the last attempt in the loop, stop
-            if attempt == retries - 1:
-                raise
-            sleep_time = 5 * (attempt + 1)
-            print(f"Retrying in {sleep_time} seconds...")
-            time.sleep(sleep_time)
-            
-    return
+        # Put data for row extracted from API into normalized fields.
+        for row in records:
+            yield {
+                "name_to_search": row.get("name_to_search"),
+                "source_id": str(row.get("source_id")),
+                "entity_status": "Active",
+                "source": provider_params["source"],
+                "state": provider_params["state"]
+            }
+        # Increase the offset by the batch size
+        offset += provider_params["batch_size"]
+    
 
 def iter_entities():
     return
