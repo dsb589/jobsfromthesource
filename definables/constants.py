@@ -21,3 +21,9 @@ NONPROFIT_501C_CODES = [
 NPI_API_LIMIT = 1000
 
 LETTER_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+ZIP_PREFIXES = {
+    "CT": [f"{n:03d}" for n in range(60, 70)],
+    "MA": [f"{n:03d}" for n in range(10, 28)],
+    "NY":[f"{n:03d}" for n in range(100, 150)]
+}

@@ -903,7 +903,17 @@ def iter_medical_organizations(provider_params):
             # Move to next batch.
             skip += provider_params["batch_size"]
     
-    return
+    # Main loop for iter_medical_organizations
+    for state in dfn.STATES:
+        # access zip prefixes list from constants
+        zip_prefixes = dfn.ZIP_PREFIXES[state]
+        # loop through each set
+        for prefix in zip_prefixes:
+            # make a searchable object
+            zip_prefix = (prefix + "*")
+            # call zip partition function
+            yield from get_zip_partition(state, zip_prefix)
+            
 
 
 def iter_entities():
