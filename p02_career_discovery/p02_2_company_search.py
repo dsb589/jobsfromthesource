@@ -154,4 +154,11 @@ def score_candidate(company_name, title, url, content):
         # score a candidate higher if the domain and company are close
         if domain_match:
             score += 30
+    # Finally, slightly increase the score if the website indicates that
+    # its an employer, based on presence of predefined employer keywords
+    for term in dfn.SEARXNG_EMPLOYER_SIGNALS:
+        if term in text:
+            score += 5
+    # apply domain penalty, if applicable
+    score += domain_penalty(url)
     return
