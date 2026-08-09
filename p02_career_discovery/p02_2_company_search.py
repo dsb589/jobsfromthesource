@@ -188,6 +188,6 @@ def search_company(company_name, state=None, results_per_query=3):
         # handle errors if search fails
         except Exception as e:
             print("Search failed:", company_name, e)
-
             continue
+        # 
     return
