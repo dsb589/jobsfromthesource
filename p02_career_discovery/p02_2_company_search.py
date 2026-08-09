@@ -230,4 +230,10 @@ def search_company(company_name, state=None, results_per_query=3):
     return df
 
 def process_company(row):
+    """
+    Caller function to store results from search_company
+    """
+    # run search company function
+    results = search_company(row.name_to_search, row.state)
+    return row.name_to_search, results
     
