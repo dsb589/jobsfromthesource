@@ -29,3 +29,51 @@ def ensure_docker_running(timeout=120, check_interval=2):
     if result.returncode == 0:
         print("Docker is already running.")
         return
+    # If it's not running, we have to find it and start it.
+    # Log
+    print("Docker is not running.")
+    # Search for common Docker paths on Windows
+    docker_desktop_paths = [
+        r"C:\Program Files\Docker\Docker\Docker Desktop.exe",
+        r"C:\Program Files (x86)\Docker\Docker\Docker Desktop.exe",
+        r"C:\Users\{}\AppData\Local\Programs\Docker\Docker\Docker Desktop.exe".format(
+            __import__("getpass").getuser())]
+    # Check these paths. 
+    docker_desktop = None
+    # See if docker exists in any of the common windows paths
+    for path in docker_desktop_paths:
+        if __import__("os").path.exists(path):
+            docker_desktop = path
+            break
+    # If we still can't find it, throw an error.
+    if docker_desktop is None:
+        raise RuntimeError("Docker Desktop was not found.")
+    # if we can find it, open it
+    subprocess.Popen([docker_desktop],
+                      stdout=subprocess.DEVNULL,
+                      stderr=subprocess.DEVNULL)
+    # Finally, wait for the Docker daemon
+    # log
+    print("Waiting for Docker daemon...")
+    start = time.time()
+    while True:
+        # wait for it to load for 10 seconds
+        result = subprocess.run([docker_path, "info"],
+                                stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL,
+                                timeout=10)
+        # if it's successfully loaded, finish.
+        if result.returncode == 0:
+            elapsed = (time.time() - start)
+            print("Docker is ready ({round(elapsed, 1)} seconds).")
+            return
+        
+        # Otherwise, throw a timeout error.
+        elapsed = time.time() - start
+        if elapsed >= timeout:
+            raise RuntimeError(
+                    "Docker Desktop started, but the Docker daemon did not become \
+                    ready within {timeout} seconds.")
+        # sleep and try again
+        time.sleep(check_interval)
+    
