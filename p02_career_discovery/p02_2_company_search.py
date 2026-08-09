@@ -167,4 +167,27 @@ def search_company(company_name, state=None, results_per_query=3):
     """
     Function to find and assess candidates for each company website
     """
+    # initialize blank query dict
+    candidates = {}
+    # generate queries for each organisation
+    queries = generate_queries(
+        company_name,
+        state
+    )
+    # loop through the results from each query
+    for query in queries:
+        # Check if we already have a very strong candidate.
+        # If we do, choose it and stop.
+        if candidates:
+            best_score = max(c["score"]for c in candidates.values())
+            if best_score >= 90:
+                break
+        # if we are still deciding, run query through searxng
+        try:
+            results = search_searxng(query, num_results=results_per_query)
+        # handle errors if search fails
+        except Exception as e:
+            print("Search failed:", company_name, e)
+
+            continue
     return
