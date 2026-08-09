@@ -205,7 +205,3 @@ The following applications are required:
 
 ---
 
-
-- Search functionality
-- AI-powered job matching
-- Candidate/job recommendation systems
