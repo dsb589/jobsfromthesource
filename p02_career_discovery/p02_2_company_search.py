@@ -76,4 +76,14 @@ def ensure_docker_running(timeout=120, check_interval=2):
                     ready within {timeout} seconds.")
         # sleep and try again
         time.sleep(check_interval)
+        
+def generate_queries(company_name, state=None):
+    """
+    Broad recall search - basic search variants to place in SearXNG query
+    """
+    queries = [company_name, f"{company_name} careers", f"{company_name} jobs"]
+    # if state is specified then include it in the search
+    if state:
+        queries.append(f"{company_name} {state}")
+    return list(dict.fromkeys(queries))
     
