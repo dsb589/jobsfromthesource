@@ -118,3 +118,7 @@ BUSINESS_TERMS_SCORES = {
     "store": 2,
     "supply": 2
 }
+
+
+# SEARXNG CONSTANTS
+SEARXNG_URL = "http://localhost:8080/search"
