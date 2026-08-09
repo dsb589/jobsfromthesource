@@ -123,9 +123,18 @@ def domain_penalty(url):
             return -100
     return 0
 
-def score_candidate():
+def score_candidate(company_name, title, url, content):
     """
     Function to score candidate websites for an employer to determine
     most likely fit.
     """
+    # by default, give candidates a score of 0
+    score = 0
+    # apply basic cleaning to company name
+    company = clean_company_name(company_name)
+    # Check to see if the company name is in the website name
+    text = " ".join([title or "", content or "", url or ""]).lower()
+    # if its present, increase the score of the candidate site
+    if company in text:
+        score += 50
     return
