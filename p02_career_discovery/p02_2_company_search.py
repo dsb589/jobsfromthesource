@@ -239,6 +239,10 @@ def process_company(row):
     return row.name_to_search, results
     
 def benchmark_companies(df, max_workers=10):
+    """
+    Create benchmark data for companies using calls to various other
+    functions in this file.
+    """
     # create copy of input df
     sample = df.copy()
     total = len(sample)
