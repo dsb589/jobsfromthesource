@@ -122,3 +122,31 @@ BUSINESS_TERMS_SCORES = {
 
 # SEARXNG CONSTANTS
 SEARXNG_URL = "http://localhost:8080/search"
+SEARXNG_BLOCKED_DOMAINS = {
+    "indeed.com",
+    "glassdoor.com",
+    "linkedin.com",
+    "facebook.com",
+    "instagram.com",
+    "youtube.com",
+    "reddit.com",
+    "wikipedia.org",
+    "bbc.co.uk",
+    "commentcamarche.net",
+    "ctcompanydir.com",
+    "bizapedia.com",
+    "opencorporates.com",
+    "dnb.com",
+    "zoominfo.com",
+    "yellowpages.com",
+    "manta.com",
+    "dnb.com",
+    "dnb.com",
+    "crunchbase.com",
+    "bbb.org",
+    "mapquest.com",
+    "trustpilot.com",
+    "chamberofcommerce.com",
+    "nextdoor.com",
+    "waze.com",
+}
