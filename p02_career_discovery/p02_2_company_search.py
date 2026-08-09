@@ -4,6 +4,7 @@ import shutil
 import pandas as pd
 from urllib.parse import urlparse
 import re
+import os
 from p02_1_searxng_client import search_searxng
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from definables import constants as dfn
@@ -237,7 +238,7 @@ def process_company(row):
     results = search_company(row.name_to_search, row.state)
     return row.name_to_search, results
     
-def benchmark_companies(df, sample_size=100, max_workers=10):
+def benchmark_companies(df, max_workers=10):
     # create copy of input df
     sample = df.copy()
     total = len(sample)
@@ -284,4 +285,19 @@ def benchmark_companies(df, sample_size=100, max_workers=10):
     print("Seconds/company:", round(elapsed/total, 2))
     
     return output
-            
+
+def main():
+    # check for docker
+    ensure_docker_running()
+    # get input file
+    all_employer_cleaned_df = pd.read_parquet(os.path.join("p01_outputs",
+                                                           "p01_2_employer_tables_output", 
+                                                           "p01_2.parquet"))
+    #  benchmark candidate websites
+    candidates_df = benchmark_companies(all_employer_cleaned_df)
+    candidates_df.to_parquet(os.path.join("p02_outputs",
+                                          "p02_2_company_search_output", 
+                                          "p02_2.parquet"))
+    
+if __name__ == "__main__":
+    main()
