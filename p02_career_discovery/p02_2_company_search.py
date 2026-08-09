@@ -98,7 +98,7 @@ def clean_company_name(name):
     # remove unnecessary business suffixes like LLC from the name
     for suffix in dfn.SEARXNG_EXTRA_SUFFIXES:
         name = name.replace(suffix, "")
-    # return cleaned name l
+    # return cleaned name 
     return re.sub(r"[^a-z0-9 ]", "", name).strip()
 
 def extract_domain(url):
@@ -110,3 +110,15 @@ def extract_domain(url):
         return urlparse(url).netloc.lower().replace("www.", "")
     except Exception:
         return ""
+    
+def domain_penalty(url):
+    """
+    Function to apply a scoring penalty to websites if the domain is blocked
+    """
+    # Get base domain
+    domain = extract_domain(url)
+    # Check if domain is blocked and if it is, apply a penalty
+    for blocked in dfn.SEARXNG_BLOCKED_DOMAINS:
+        if blocked in domain:
+            return -100
+    return 0
