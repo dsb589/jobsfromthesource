@@ -237,4 +237,51 @@ def process_company(row):
     results = search_company(row.name_to_search, row.state)
     return row.name_to_search, results
     
-def benchmark_companies():
+def benchmark_companies(df, sample_size=100, max_workers=10):
+    # create copy of input df
+    sample = df.copy()
+    total = len(sample)
+    #initialize blank output
+    output = []
+    # start timer
+    start = time.time()
+    # start counts
+    successful = 0
+    completed = 0
+    # use multi thread to parallel process
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(process_company, row): 
+                   row for row in sample.itertuples(index=False)}
+        # now assess the output of process_company 
+        for future in as_completed(futures):
+            # add to completed count
+            completed += 1
+            try:
+                # if processing works, add to successful count
+                company_name, results = future.result()
+                if len(results):
+                    successful += 1
+                    output.append(results)
+            except Exception as e:
+                print("ERROR:", e)
+            if completed % 100 == 0 or completed == total:
+                elapsed = time.time() - start
+                # log how long this process took
+                print(f"{completed}/{total} complete | Matches: {successful} | "
+                      f"Elapsed: {round(elapsed/60,1)} min")
+    # Get the elapsed time
+    elapsed = time.time() - start
+    # convert output to df
+    if output:
+        output = pd.concat(output, ignore_index=True)
+    else:
+        output = pd.DataFrame()
+    # logging
+    print("Companies searched:", total)
+    print("Companies with candidates:", successful)
+    print("Candidate URLs:", len(output))
+    print("Elapsed:", round(elapsed/60,2), "minutes")
+    print("Seconds/company:", round(elapsed/total, 2))
+    
+    return output
+            
