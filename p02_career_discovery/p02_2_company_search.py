@@ -162,3 +162,6 @@ def score_candidate(company_name, title, url, content):
     # apply domain penalty, if applicable
     score += domain_penalty(url)
     return
+
+def search_company():
+    return
