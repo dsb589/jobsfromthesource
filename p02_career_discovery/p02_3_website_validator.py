@@ -4,6 +4,8 @@ import time
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from definables import constants as dfn
+
 
 # start session to check websites
 session = requests.Session()
@@ -24,6 +26,11 @@ def wait_for_ollama():
     """
     Wait until Ollama is available. Do not start or restart Ollama.
     """
+    while True:
+        if ollama_available():
+            return True
+        print("Waiting for Ollama...")
+        time.sleep(dfn.OLLAMA_WAIT_SECONDS)
 
 def ask_ollama():
     """
