@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import re
 from p02_1_searxng_client import search_searxng
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from definables import constants as dfn
 
 def ensure_docker_running(timeout=120, check_interval=2):
     """
@@ -88,30 +89,12 @@ def generate_queries(company_name, state=None):
     return list(dict.fromkeys(queries))
 
 def clean_company_name(name):
-
+    # get lowercase name
     name = name.lower()
-
-    suffixes = [
-        " llc",
-        " inc",
-        " ltd",
-        " corporation",
-        " corp",
-        " company",
-        " co",
-        " plc"
-    ]
-
-    for suffix in suffixes:
-        name = name.replace(
-            suffix,
-            ""
-        )
-
-    return re.sub(
-        r"[^a-z0-9 ]",
-        "",
-        name
-    ).strip()
+    # remove unnecessary business suffixes like LLC from the name
+    for suffix in dfn.SEARXNG_EXTRA_SUFFIXES:
+        name = name.replace(suffix, "")
+    # return cleaned name
+    return re.sub(r"[^a-z0-9 ]", "", name).strip()
 
     
