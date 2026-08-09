@@ -228,3 +228,6 @@ def search_company(company_name, state=None, results_per_query=3):
         # keep only plausible company websites
         df = df[df["score"] >= 50]
     return df
+
+def process_company(row):
+    
