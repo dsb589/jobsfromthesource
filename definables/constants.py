@@ -160,3 +160,17 @@ SEARXNG_EXTRA_SUFFIXES = [
     " co",
     " plc"
 ]
+SEARXNG_EMPLOYER_SIGNALS = [
+        "career",
+        "careers",
+        "jobs",
+        "employment",
+        "join our team",
+        "work with us",
+        "hiring",
+        "we are hiring",
+        "apply now",
+        "opportunities",
+        "resume",
+        "send your resume"
+    ]

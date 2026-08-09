@@ -137,4 +137,21 @@ def score_candidate(company_name, title, url, content):
     # if its present, increase the score of the candidate site
     if company in text:
         score += 50
+    # check to see if individual words in the company name are in the website name
+    words = [w for w in company.split() if len(w) > 2]
+    # get count of matches of words shared between company name and website
+    matches = sum(word in text for word in words)
+    # treat each matching word as worth 10 points
+    score += matches * 10
+    # get base domain of company
+    domain = extract_domain(url)
+    # check similarity between domain text and company name
+    if domain:
+        # get unique words for the company (ignoring smaller words)
+        company_words = [w for w in company.split() if len(w) > 3]
+        # check presence of company words in domain
+        domain_match = any(word in domain for word in company_words)
+        # score a candidate higher if the domain and company are close
+        if domain_match:
+            score += 30
     return
