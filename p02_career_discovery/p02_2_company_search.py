@@ -189,5 +189,36 @@ def search_company(company_name, state=None, results_per_query=3):
         except Exception as e:
             print("Search failed:", company_name, e)
             continue
-        # 
+        # loop through the search results and find the best one
+        for rank, result in enumerate(results, start=1):
+            # store url from search result
+            url = result.get("url", "")
+            # stop if there aren't any urls
+            if not url:
+                continue
+            # get domain; if it's a blocked domain, stop.
+            domain = extract_domain(url)
+            if any(blocked in domain for blocked in dfn.SEARXNG_BLOCKED_DOMAINS):
+                continue   
+            # score the strenght of the url
+            score = score_candidate(company_name, 
+                                    result.get("title", ""),
+                                    url,
+                                    result.get("content", ""))
+            # generate a normalized row
+            row = {"company_name": company_name,
+                   "state": state,
+                   "query": query,
+                   "query_rank": rank,
+                   "title": result.get("title", ""),
+                   "url": url,
+                   "domain": extract_domain(url),
+                   "content": result.get("content", ""),
+                   "score": score}
+            # keep best version of duplicate URLs
+            if url not in candidates:
+                candidates[url] = row
+            else:
+                if score > candidates[url]["score"]:
+                    candidates[url] = row
     return
