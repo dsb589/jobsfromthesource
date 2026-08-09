@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 from urllib.parse import urlparse
 import re
-from cd1_searxng_client import search_searxng
+from p02_1_searxng_client import search_searxng
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def ensure_docker_running(timeout=120, check_interval=2):
@@ -86,4 +86,32 @@ def generate_queries(company_name, state=None):
     if state:
         queries.append(f"{company_name} {state}")
     return list(dict.fromkeys(queries))
+
+def clean_company_name(name):
+
+    name = name.lower()
+
+    suffixes = [
+        " llc",
+        " inc",
+        " ltd",
+        " corporation",
+        " corp",
+        " company",
+        " co",
+        " plc"
+    ]
+
+    for suffix in suffixes:
+        name = name.replace(
+            suffix,
+            ""
+        )
+
+    return re.sub(
+        r"[^a-z0-9 ]",
+        "",
+        name
+    ).strip()
+
     

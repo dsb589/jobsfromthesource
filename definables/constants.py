@@ -150,3 +150,13 @@ SEARXNG_BLOCKED_DOMAINS = {
     "nextdoor.com",
     "waze.com",
 }
+SEARXNG_EXTRA_SUFFIXES = [
+    " llc",
+    " inc",
+    " ltd",
+    " corporation",
+    " corp",
+    " company",
+    " co",
+    " plc"
+]
