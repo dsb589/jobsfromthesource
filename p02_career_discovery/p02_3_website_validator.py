@@ -13,7 +13,13 @@ def ollama_available():
     """
     Check whether Ollama API is responding.
     """
-    
+    try:
+        response = session.get("http://localhost:11434", timeout=3)
+        return response.status_code == 200
+    except Exception:
+        return False
+
+
 def wait_for_ollama():
     """
     Wait until Ollama is available. Do not start or restart Ollama.
