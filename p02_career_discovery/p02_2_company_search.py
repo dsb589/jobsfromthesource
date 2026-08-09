@@ -122,3 +122,10 @@ def domain_penalty(url):
         if blocked in domain:
             return -100
     return 0
+
+def score_candidate():
+    """
+    Function to score candidate websites for an employer to determine
+    most likely fit.
+    """
+    return
