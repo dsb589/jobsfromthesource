@@ -13,3 +13,10 @@ def ensure_docker_running(timeout=120, check_interval=2):
     This function confirms wether Docker is running, and if it isn't running,
     it starts it.
     """
+    # Start by looking for Docker on your machine.
+    docker_path = shutil.which("docker")
+    # Raise an error if Docker isn't installed. 
+    if docker_path is None:
+        raise RuntimeError("Docker CLI was not found. \
+                           Make sure Docker Desktop is installed and Docker \
+                           is available on PATH.")
