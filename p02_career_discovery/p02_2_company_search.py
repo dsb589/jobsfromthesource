@@ -163,5 +163,8 @@ def score_candidate(company_name, title, url, content):
     score += domain_penalty(url)
     return
 
-def search_company():
+def search_company(company_name, state=None, results_per_query=3):
+    """
+    Function to find and assess candidates for each company website
+    """
     return
