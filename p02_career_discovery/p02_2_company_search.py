@@ -237,3 +237,4 @@ def process_company(row):
     results = search_company(row.name_to_search, row.state)
     return row.name_to_search, results
     
+def benchmark_companies():
