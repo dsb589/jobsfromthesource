@@ -174,3 +174,14 @@ SEARXNG_EMPLOYER_SIGNALS = [
         "resume",
         "send your resume"
     ]
+
+
+# Ollama Constants
+OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_RETRIES = 5
+OLLAMA_WAIT_SECONDS = 5
+# Website validation constants
+SCORE_GAP_CUTOFF = 20
+WEBSITE_MAX_PAGE_TEXT = 1200
+WEBSITE_MAX_CONTENT_TEXT = 700
