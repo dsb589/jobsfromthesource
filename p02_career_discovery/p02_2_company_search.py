@@ -221,4 +221,10 @@ def search_company(company_name, state=None, results_per_query=3):
             else:
                 if score > candidates[url]["score"]:
                     candidates[url] = row
-    return
+        # put candidate urls into df
+        df = pd.DataFrame(candidates.values())
+        if len(df):
+            df = df.sort_values("score", ascending=False)
+        # keep only plausible company websites
+        df = df[df["score"] >= 50]
+    return df
