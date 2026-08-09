@@ -89,12 +89,24 @@ def generate_queries(company_name, state=None):
     return list(dict.fromkeys(queries))
 
 def clean_company_name(name):
+    """
+    Function to strip out words like LLC, Inc., etc. from company names before 
+    searching
+    """
     # get lowercase name
     name = name.lower()
     # remove unnecessary business suffixes like LLC from the name
     for suffix in dfn.SEARXNG_EXTRA_SUFFIXES:
         name = name.replace(suffix, "")
-    # return cleaned name
+    # return cleaned name l
     return re.sub(r"[^a-z0-9 ]", "", name).strip()
 
-    
+def extract_domain(url):
+    """
+    Function to get the base domain of the selected website
+    """
+    try:
+        # get base domain
+        return urlparse(url).netloc.lower().replace("www.", "")
+    except Exception:
+        return ""
