@@ -32,7 +32,30 @@ def wait_for_ollama():
         print("Waiting for Ollama...")
         time.sleep(dfn.OLLAMA_WAIT_SECONDS)
 
-def ask_ollama():
+def ask_ollama(prompt):
     """
     Send one validation request. Unload after every response.
     """
+    payload = {"model": dfn.OLLAMA_MODEL,
+               "prompt": prompt,
+               "stream": False,
+                # unload model immediately
+                # after response
+                "keep_alive":"0s"}
+
+
+    for attempt in range(1, dfn.OLLAMA_RETRIES + 1):
+        try:
+            wait_for_ollama()
+            response = session.post(dfn.OLLAMA_URL,
+                                    json=payload,
+                                    timeout=300)
+            response.raise_for_status()
+            result = (response.json().get("response", "").strip())
+            return result
+        except Exception as e:
+            print(f"Ollama attempt {attempt}/{dfn.OLLAMA_RETRIES} failed:", e)
+            if attempt < dfn.OLLAMA_RETRIES:
+                time.sleep(dfn.OLLAMA_WAIT_SECONDS * attempt)
+            else:
+                return ""
