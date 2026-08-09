@@ -20,3 +20,12 @@ def ensure_docker_running(timeout=120, check_interval=2):
         raise RuntimeError("Docker CLI was not found. \
                            Make sure Docker Desktop is installed and Docker \
                            is available on PATH.")
+    # assuming Docker exists on machine, check if it's running.
+    result = subprocess.run([docker_path, "info"],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                            timeout=1)
+    # If Docker is running already, nothing else to do.
+    if result.returncode == 0:
+        print("Docker is already running.")
+        return
