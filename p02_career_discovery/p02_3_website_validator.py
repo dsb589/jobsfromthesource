@@ -59,3 +59,6 @@ def ask_ollama(prompt):
                 time.sleep(dfn.OLLAMA_WAIT_SECONDS * attempt)
             else:
                 return ""
+            
+def clean_test():
+    
