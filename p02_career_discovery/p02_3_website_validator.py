@@ -65,3 +65,13 @@ def clean_test(text, limit):
     Remove excessive whitespace
     and limit size of the website content.
     """
+    # return blank text if no text passed
+    if not text:
+        return ""
+    
+    # strip out unwanted characters
+    text = str(text).replace("\n", " ").replace("\r", " ")
+    # treat text as a list separated by blank space
+    text = " ".join( text.split())
+    # get first n words in text where n is limit
+    return text[:limit]
