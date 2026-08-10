@@ -60,5 +60,8 @@ def ask_ollama(prompt):
             else:
                 return ""
             
-def clean_test():
-    
+def clean_test(text, limit):
+    """ 
+    Remove excessive whitespace
+    and limit size of the website content.
+    """
